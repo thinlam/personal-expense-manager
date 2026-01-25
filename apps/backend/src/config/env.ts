@@ -1,18 +1,14 @@
-import dotenv from "dotenv";
+import "dotenv/config";
 
-dotenv.config();
-
-function mustGet(name: string): string {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing env: ${name}`);
+const must = (k: string) => {
+  const v = process.env[k];
+  if (!v) throw new Error(`Missing env: ${k}`);
   return v;
-}
+};
 
 export const env = {
-  nodeEnv: process.env.NODE_ENV ?? "development",
-  port: Number(process.env.PORT ?? 5000),
-  mongoUri: mustGet("MONGO_URI"),
-  jwtSecret: mustGet("JWT_SECRET"),
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "7d",
-  clientOrigin: process.env.CLIENT_ORIGIN ?? "http://localhost:5173",
+  PORT: Number(process.env.PORT ?? 4000),
+  MONGODB_URI: must("MONGODB_URI"),
+  JWT_SECRET: must("JWT_SECRET"),
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN ?? "7d",
 };

@@ -1,41 +1,42 @@
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { env } from "../../config/env";
 import { UserModel } from "../users/user.model";
-import { RegisterDto, LoginDto } from "./auth.dto";
-import { hashPassword, comparePassword } from "../../utils/hash";
-import { signAccessToken } from "../../utils/jwt";
 
-export class AuthService {
-  static async register(dto: RegisterDto) {
-    const exists = await UserModel.findOne({ email: dto.email }).lean();
-    if (exists) throw { status: 409, message: "Email already exists" };
+const signToken = (payload: { userId: string; email: string }) =>
+  jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN });
 
-    const passwordHash = await hashPassword(dto.password);
+export const AuthService = {
+  async register(input: { name: string; email: string; password: string }) {
+    const email = input.email.toLowerCase().trim();
 
-    const user = await UserModel.create({
-      name: dto.name,
-      email: dto.email,
-      passwordHash,
-    });
+    const existed = await UserModel.findOne({ email }).lean();
+    if (existed) return { ok: false as const, status: 409, message: "Email đã tồn tại" };
 
-    const token = signAccessToken({ sub: user._id.toString(), email: user.email });
+    const passwordHash = await bcrypt.hash(input.password, 10);
+    const user = await UserModel.create({ name: input.name.trim(), email, passwordHash });
 
+    console.log("✅ Created user:", user._id.toString(), user.email);
+
+    const token = signToken({ userId: user._id.toString(), email: user.email });
     return {
-      user: { id: user._id.toString(), name: user.name, email: user.email },
-      token,
+      ok: true as const,
+      data: { token, user: { id: user._id.toString(), name: user.name, email: user.email } },
     };
-  }
+  },
 
-  static async login(dto: LoginDto) {
-    const user = await UserModel.findOne({ email: dto.email });
-    if (!user) throw { status: 401, message: "Invalid email or password" };
+  async login(input: { email: string; password: string }) {
+    const email = input.email.toLowerCase().trim();
+    const user = await UserModel.findOne({ email });
+    if (!user) return { ok: false as const, status: 401, message: "Sai email hoặc mật khẩu" };
 
-    const ok = await comparePassword(dto.password, user.passwordHash);
-    if (!ok) throw { status: 401, message: "Invalid email or password" };
+    const ok = await bcrypt.compare(input.password, user.passwordHash);
+    if (!ok) return { ok: false as const, status: 401, message: "Sai email hoặc mật khẩu" };
 
-    const token = signAccessToken({ sub: user._id.toString(), email: user.email });
-
+    const token = signToken({ userId: user._id.toString(), email: user.email });
     return {
-      user: { id: user._id.toString(), name: user.name, email: user.email },
-      token,
+      ok: true as const,
+      data: { token, user: { id: user._id.toString(), name: user.name, email: user.email } },
     };
-  }
-}
+  },
+};
