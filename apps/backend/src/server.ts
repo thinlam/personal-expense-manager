@@ -1,20 +1,19 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import app from "./app";
+import { createApp } from "./app";
+import { env } from "./config/env";
+import { connectDatabase } from "./config/database";
 
-dotenv.config();
+async function bootstrap() {
+  await connectDatabase();
 
-const PORT = process.env.PORT || 4000;
-const MONGO_URI = process.env.MONGO_URI as string;
-
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected");
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
+  const app = createApp();
+  app.listen(env.port, () => {
+    // eslint-disable-next-line no-console
+    console.log(`[API] Listening on http://localhost:${env.port}`);
   });
+}
+
+bootstrap().catch((e) => {
+  // eslint-disable-next-line no-console
+  console.error("[BOOTSTRAP FAILED]", e);
+  process.exit(1);
+});

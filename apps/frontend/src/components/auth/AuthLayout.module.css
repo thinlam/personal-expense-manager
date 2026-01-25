@@ -1,0 +1,378 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, rgba(2, 6, 23, 1) 0%, rgba(15, 23, 42, 1) 40%, rgba(2, 6, 23, 1) 100%);
+}
+
+.shell {
+  width: min(1100px, 100%);
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(2, 6, 23, 0.45);
+  backdrop-filter: blur(10px);
+}
+
+.brandPane {
+  padding: 28px;
+  color: rgba(226, 232, 240, 1);
+  background:
+    radial-gradient(900px 500px at 20% 20%, rgba(56, 189, 248, 0.18), transparent 60%),
+    radial-gradient(700px 400px at 80% 40%, rgba(167, 139, 250, 0.15), transparent 60%);
+  border-right: 1px solid rgba(148, 163, 184, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.brandTop {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 20px;
+  background: rgba(56, 189, 248, 0.18);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.brandName {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.brandTag {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.brandCard {
+  margin-top: 8px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.metricRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.metric {
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(2, 6, 23, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.metricValue {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.metricLabel {
+  font-size: 12px;
+  opacity: 0.78;
+  margin-top: 6px;
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.featureItem {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.bullet {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  margin-top: 6px;
+  background: rgba(56, 189, 248, 0.6);
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12);
+}
+
+.featureTitle {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.featureDesc {
+  font-size: 12px;
+  opacity: 0.78;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.brandFooter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  opacity: 0.85;
+}
+
+.muted {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.7);
+}
+
+.formPane {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: rgba(2, 6, 23, 0.15);
+}
+
+.formCard {
+  padding: 22px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.header {
+  margin-bottom: 14px;
+}
+
+.h1 {
+  margin: 0;
+  font-size: 22px;
+  color: rgba(226, 232, 240, 1);
+  letter-spacing: 0.2px;
+}
+
+.sub {
+  margin: 8px 0 0;
+  font-size: 13px;
+  opacity: 0.78;
+  color: rgba(226, 232, 240, 1);
+  line-height: 1.4;
+}
+
+/* Common form UI (tái dùng cho Login & Register) */
+.form {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 12px;
+  opacity: 0.86;
+  color: rgba(226, 232, 240, 1);
+}
+
+.inputWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(2, 6, 23, 0.35);
+}
+
+.input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: rgba(226, 232, 240, 1);
+  font-size: 14px;
+}
+
+.inputWrap:focus-within {
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.08);
+}
+
+.inputError {
+  border-color: rgba(248, 113, 113, 0.35);
+  box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.08);
+}
+
+.helperError {
+  font-size: 12px;
+  color: rgba(248, 113, 113, 1);
+  opacity: 0.95;
+}
+
+.ghostBtn {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(2, 6, 23, 0.25);
+  color: rgba(226, 232, 240, 1);
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ghostBtn:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.rowBetween {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(226, 232, 240, 1);
+  opacity: 0.9;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+}
+
+.linkBtn {
+  border: none;
+  background: transparent;
+  color: rgba(56, 189, 248, 1);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0;
+}
+
+.linkBtn:hover {
+  text-decoration: underline;
+}
+
+.primaryBtn {
+  margin-top: 6px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  background: rgba(56, 189, 248, 0.18);
+  color: rgba(226, 232, 240, 1);
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.primaryBtn:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.22);
+}
+
+.btnDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.footer {
+  margin: 12px 0 0;
+  font-size: 13px;
+  opacity: 0.86;
+  color: rgba(226, 232, 240, 1);
+}
+
+.link {
+  color: rgba(56, 189, 248, 1);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.bottomNote {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.alert {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(248, 113, 113, 0.28);
+  background: rgba(248, 113, 113, 0.08);
+  color: rgba(254, 226, 226, 1);
+  margin-top: 10px;
+}
+
+.alertIcon {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  background: rgba(248, 113, 113, 0.22);
+}
+
+.alertTitle {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.alertText {
+  font-size: 12px;
+  opacity: 0.9;
+  margin-top: 2px;
+  line-height: 1.35;
+}
+
+/* Responsive */
+@media (max-width: 920px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+  .brandPane {
+    border-right: none;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  }
+}
