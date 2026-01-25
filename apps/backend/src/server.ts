@@ -1,20 +1,17 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import app from "./app";
+import { createApp } from "./app";
+import { connectDB } from "./config/db";
+import { env } from "./config/env";
 
-dotenv.config();
+async function main() {
+  await connectDB(env.MONGODB_URI);
 
-const PORT = process.env.PORT || 4000;
-const MONGO_URI = process.env.MONGO_URI as string;
-
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected");
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
+  const app = createApp();
+  app.listen(env.PORT, () => {
+    console.log(`✅ API: http://localhost:${env.PORT}/api/health`);
   });
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
