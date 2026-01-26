@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Switch,
 } from "react-native";
 import { Link, router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -25,6 +26,9 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [enable2FA, setEnable2FA] = useState(false);
+  const [remember, setRemember] = useState(false);
 
   const canSubmit = useMemo(() => {
     return email.trim().length > 0 && password.length >= 6 && !loading;
@@ -47,10 +51,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={[colors.bg0, colors.bg0, colors.bg1]}
-      style={{ flex: 1 }}
-    >
+    <LinearGradient colors={[colors.bg0, colors.bg0, colors.bg1]} style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.select({ ios: "padding", android: undefined })}
@@ -59,29 +60,28 @@ export default function LoginScreen() {
           contentContainerStyle={loginStyles.container}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Brand */}
-          <View style={loginStyles.brandRow}>
-            <View style={loginStyles.brandIcon}>
-              <Ionicons name="wallet-outline" size={20} color={colors.text} />
+          
+
+          {/* Logo */}
+          <View style={loginStyles.logoWrap}>
+            <View style={loginStyles.logoBox}>
+              <Ionicons name="wallet-outline" size={32} color="#0B1220" />
             </View>
-            <Text style={loginStyles.brandText}>FinanceMate</Text>
+            <Text style={loginStyles.welcomeTitle}>Chào mừng trở lại</Text>
+            <Text style={loginStyles.welcomeSubtitle}>
+              Vui lòng đăng nhập để quản lý tài chính của bạn
+            </Text>
           </View>
 
-          <Text style={loginStyles.title}>Đăng nhập</Text>
-          <Text style={loginStyles.subtitle}>
-            Quản lý chi tiêu, ngân sách và mục tiêu tài chính của bạn một cách khoa học.
-          </Text>
-
+          {/* Card */}
           <View style={loginStyles.card}>
             {/* Email */}
-            <Text style={loginStyles.label}>Email</Text>
+            <Text style={loginStyles.label}>Email hoặc Số điện thoại</Text>
             <View style={loginStyles.inputWrap}>
-              <Ionicons name="mail-outline" size={18} color={colors.muted} />
               <TextInput
-                placeholder="you@example.com"
+                placeholder="email@example.com"
                 placeholderTextColor={colors.muted2}
                 autoCapitalize="none"
-                keyboardType="email-address"
                 value={email}
                 onChangeText={setEmail}
                 style={loginStyles.input}
@@ -91,20 +91,15 @@ export default function LoginScreen() {
             {/* Password */}
             <Text style={[loginStyles.label, { marginTop: 12 }]}>Mật khẩu</Text>
             <View style={loginStyles.inputWrap}>
-              <Ionicons name="lock-closed-outline" size={18} color={colors.muted} />
               <TextInput
-                placeholder="Tối thiểu 6 ký tự"
+                placeholder="Nhập mật khẩu"
                 placeholderTextColor={colors.muted2}
                 secureTextEntry={!showPass}
                 value={password}
                 onChangeText={setPassword}
                 style={loginStyles.input}
-                onSubmitEditing={() => canSubmit && submit()}
               />
-              <Pressable
-                onPress={() => setShowPass((v) => !v)}
-                style={loginStyles.iconBtn}
-              >
+              <Pressable onPress={() => setShowPass(v => !v)}>
                 <Ionicons
                   name={showPass ? "eye-off-outline" : "eye-outline"}
                   size={18}
@@ -112,27 +107,33 @@ export default function LoginScreen() {
                 />
               </Pressable>
             </View>
-
-            {/* Helper */}
-            <View style={loginStyles.rowBetween}>
-              <Text style={loginStyles.helper}>
-                {password.length > 0 && password.length < 6
-                  ? "Mật khẩu quá ngắn."
-                  : " "}
-              </Text>
-              <Link href="/auth/forgot" style={loginStyles.linkMuted}>
-                Quên mật khẩu?
-              </Link>
+            <View style={loginStyles.toggleRow}>
+              <View style={loginStyles.toggleLeft}>
+                <Ionicons name="shield-checkmark-outline" size={18} color="#1FEE6D" />
+                <Text style={loginStyles.toggleText}>Bật bảo mật 2 lớp (2FA)</Text>
+              </View>
+              <Switch value={enable2FA} onValueChange={setEnable2FA} />
             </View>
+            {/* Remember + Forgot (cùng hàng) */}
+              <View style={loginStyles.rowBetween}>
+                <View style={loginStyles.rememberInline}>
+                  <Switch value={remember} onValueChange={setRemember} />
+                  <Text style={loginStyles.rememberText}>Ghi nhớ đăng nhập</Text>
+                </View>
+
+                <Link href="/auth/forgot-password" style={loginStyles.linkMuted}>
+                  Quên mật khẩu?
+                </Link>
+              </View> 
 
             {/* Submit */}
             <Pressable
               onPress={submit}
               disabled={!canSubmit}
-              style={({ pressed }) => [
+              style={[
                 loginStyles.primaryBtn,
                 !canSubmit && loginStyles.primaryBtnDisabled,
-                pressed && canSubmit && { transform: [{ scale: 0.98 }] },
+                { marginTop: 16 },
               ]}
             >
               {loading ? (
@@ -145,29 +146,23 @@ export default function LoginScreen() {
             {/* Divider */}
             <View style={loginStyles.dividerRow}>
               <View style={loginStyles.dividerLine} />
-              <Text style={loginStyles.dividerText}>hoặc</Text>
+              <Text style={loginStyles.dividerText}>Hoặc</Text>
               <View style={loginStyles.dividerLine} />
             </View>
 
             {/* Google */}
-            <Pressable style={loginStyles.secondaryBtn}>
-              <Ionicons name="logo-google" size={18} color={colors.text} />
-              <Text style={loginStyles.secondaryBtnText}>
-                Tiếp tục với Google
-              </Text>
+            <Pressable style={loginStyles.googleBtn}>
+              <Ionicons name="logo-google" size={18} color="#DB4437" />
+              <Text style={loginStyles.googleText}>Đăng nhập với Google</Text>
             </Pressable>
 
             <Text style={loginStyles.footerText}>
-              Chưa có tài khoản?{" "}
+              Bạn chưa có tài khoản?{" "}
               <Link href="/auth/register" style={loginStyles.link}>
-                Đăng ký
+                Đăng ký ngay
               </Link>
             </Text>
           </View>
-
-          <Text style={loginStyles.disclaimer}>
-            Bằng việc đăng nhập, bạn đồng ý với Điều khoản & Chính sách bảo mật.
-          </Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </LinearGradient>

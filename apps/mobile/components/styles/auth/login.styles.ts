@@ -169,4 +169,102 @@ export const loginStyles = StyleSheet.create({
     color: "rgba(182,195,225,0.75)",
     ...typography.disclaimer,
   },
+  headerRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  marginBottom: 24,
+},
+
+backBtn: {
+  padding: 6,
+  marginRight: 8,
+},
+
+headerTitle: {
+  color: colors.text,
+  fontSize: 16,
+  fontWeight: "700",
+},
+
+logoWrap: {
+  alignItems: "center",
+  marginBottom: 24,
+},
+
+logoBox: {
+  width: 72,
+  height: 72,
+  borderRadius: 18,
+  backgroundColor: "#1FEE6D",
+  alignItems: "center",
+  justifyContent: "center",
+  marginBottom: 12,
+},
+
+welcomeTitle: {
+  color: colors.text,
+  fontSize: 22,
+  fontWeight: "800",
+  textAlign: "center",
+  marginBottom: 6,
+},
+
+welcomeSubtitle: {
+  color: colors.textSecondary,
+  fontSize: 13,
+  textAlign: "center",
+},
+
+toggleRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  marginTop: 14,
+},
+
+toggleLeft: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 8,
+},
+
+toggleText: {
+  color: colors.text,
+  fontSize: 13,
+},
+
+rememberRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 8,
+  marginTop: 5,
+},
+
+rememberText: {
+  color: colors.textSecondary,
+  fontSize: 12,
+},
+
+googleBtn: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 10,
+  backgroundColor: "#FFFFFF",
+  borderRadius: 14,
+  paddingVertical: 12,
+},
+
+googleText: {
+  color: "#111",
+  fontSize: 14,
+  fontWeight: "600",
+},
+rememberInline: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 8,
+},
+
+
 });

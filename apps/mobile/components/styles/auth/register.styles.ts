@@ -92,4 +92,81 @@ export const registerStyles = StyleSheet.create({
     fontWeight: "800",
     textDecorationLine: "underline",
   },
+  headerRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  marginBottom: 24,
+},
+
+backBtn: {
+  padding: 6,
+  marginRight: 8,
+},
+
+headerTitle: {
+  color: colors.text,
+  fontSize: 16,
+  fontWeight: "700",
+},
+
+bigTitle: {
+  color: colors.text,
+  fontSize: 24,
+  fontWeight: "800",
+  marginBottom: 6,
+},
+
+dividerRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: spacing.sm,
+  marginVertical: spacing.md,
+},
+
+dividerLine: {
+  flex: 1,
+  height: 1,
+  backgroundColor: colors.strokeSoft,
+},
+
+dividerText: {
+  color: "#9DB0D9",
+  fontSize: 12,
+},
+
+checkboxRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 8,
+  marginTop: 12,
+},
+
+checkboxText: {
+  color: colors.textSecondary,
+  fontSize: 12,
+  flex: 1,
+},
+
+linkInline: {
+  color: "#1FEE6D",
+  fontWeight: "700",
+},
+
+googleBtn: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 10,
+  borderWidth: 1,
+  borderColor: colors.stroke,
+  borderRadius: 14,
+  paddingVertical: 12,
+},
+
+googleText: {
+  color: colors.text,
+  fontSize: 14,
+  fontWeight: "600",
+},
+
 });
