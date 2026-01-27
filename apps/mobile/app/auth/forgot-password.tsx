@@ -1,5 +1,14 @@
 import React, { useMemo, useState } from "react";
-import { Alert, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View, ActivityIndicator } from "react-native";
+import {
+  Alert,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { Stack, router } from "expo-router";
 import { forgotPasswordApi } from "../../services/auth.service";
 
@@ -8,6 +17,11 @@ export default function ForgotPasswordScreen() {
   const [loading, setLoading] = useState(false);
 
   const canSubmit = useMemo(() => email.trim().length >= 5 && !loading, [email, loading]);
+
+  const goLogin = () => {
+    // replace để không quay lại màn quên mật khẩu khi bấm back
+    router.replace("/auth/login");
+  };
 
   const submit = async () => {
     const value = email.trim().toLowerCase();
@@ -61,8 +75,17 @@ export default function ForgotPasswordScreen() {
 
         <View style={{ flex: 1 }} />
 
-        <Pressable onPress={submit} disabled={!canSubmit} style={[styles.primaryBtn, !canSubmit && styles.primaryBtnDisabled]}>
+        <Pressable
+          onPress={submit}
+          disabled={!canSubmit}
+          style={[styles.primaryBtn, !canSubmit && styles.primaryBtnDisabled]}
+        >
           {loading ? <ActivityIndicator /> : <Text style={styles.primaryBtnText}>Gửi mã OTP</Text>}
+        </Pressable>
+
+        {/* Nút trở về đăng nhập */}
+        <Pressable onPress={goLogin} disabled={loading} style={[styles.secondaryBtn, loading && styles.secondaryBtnDisabled]}>
+          <Text style={styles.secondaryBtnText}>Trở về đăng nhập</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -102,4 +125,18 @@ const styles = StyleSheet.create({
   },
   primaryBtnDisabled: { opacity: 0.55 },
   primaryBtnText: { color: "#062012", fontWeight: "900", fontSize: 16 },
+
+  // NEW
+  secondaryBtn: {
+    marginTop: 12,
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.22)",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.04)",
+  },
+  secondaryBtnDisabled: { opacity: 0.55 },
+  secondaryBtnText: { color: "rgba(255,255,255,0.85)", fontWeight: "800", fontSize: 14 },
 });
