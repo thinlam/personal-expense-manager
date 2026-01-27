@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
+  Switch,
 } from "react-native";
 import { Link, router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
@@ -24,17 +25,21 @@ export default function RegisterScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [accepted, setAccepted] = useState(false);
 
   const canSubmit = useMemo(() => {
     return (
       name.trim().length > 0 &&
       email.trim().length > 0 &&
       password.length >= 6 &&
+      password === confirm &&
+      accepted &&
       !loading
     );
-  }, [name, email, password, loading]);
+  }, [name, email, password, confirm, accepted, loading]);
 
   const submit = async () => {
     try {
@@ -44,8 +49,6 @@ export default function RegisterScreen() {
         email: email.trim(),
         password,
       });
-
-      // Auto-login sau đăng ký
       await saveAuth(data.token, data.user);
       router.replace("/(tabs)");
     } catch (e: any) {
@@ -56,10 +59,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <LinearGradient
-      colors={[colors.bg0, colors.bg0, colors.bg1]}
-      style={{ flex: 1 }}
-    >
+    <LinearGradient colors={[colors.bg0, colors.bg0, colors.bg1]} style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.select({ ios: "padding", android: undefined })}
@@ -68,18 +68,18 @@ export default function RegisterScreen() {
           contentContainerStyle={registerStyles.container}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={registerStyles.title}>Tạo tài khoản</Text>
+
+          <Text style={registerStyles.bigTitle}>Đăng Ký Tài Khoản</Text>
           <Text style={registerStyles.subtitle}>
-            Bắt đầu quản lý chi tiêu và mục tiêu tài chính của bạn một cách khoa học.
+            Bắt đầu quản lý tài chính thông minh ngay hôm nay.
           </Text>
 
           <View style={registerStyles.card}>
             {/* Name */}
             <Text style={registerStyles.label}>Họ và tên</Text>
             <View style={registerStyles.inputWrap}>
-              <Ionicons name="person-outline" size={18} color={colors.muted} />
               <TextInput
-                placeholder="Nguyễn Văn A"
+                placeholder="Nhập họ và tên"
                 placeholderTextColor={colors.muted2}
                 value={name}
                 onChangeText={setName}
@@ -90,12 +90,10 @@ export default function RegisterScreen() {
             {/* Email */}
             <Text style={[registerStyles.label, { marginTop: 12 }]}>Email</Text>
             <View style={registerStyles.inputWrap}>
-              <Ionicons name="mail-outline" size={18} color={colors.muted} />
               <TextInput
-                placeholder="you@example.com"
+                placeholder="example@gmail.com"
                 placeholderTextColor={colors.muted2}
                 autoCapitalize="none"
-                keyboardType="email-address"
                 value={email}
                 onChangeText={setEmail}
                 style={registerStyles.input}
@@ -105,19 +103,15 @@ export default function RegisterScreen() {
             {/* Password */}
             <Text style={[registerStyles.label, { marginTop: 12 }]}>Mật khẩu</Text>
             <View style={registerStyles.inputWrap}>
-              <Ionicons name="lock-closed-outline" size={18} color={colors.muted} />
               <TextInput
-                placeholder="Tối thiểu 6 ký tự"
+                placeholder="••••••••"
                 placeholderTextColor={colors.muted2}
                 secureTextEntry={!showPass}
                 value={password}
                 onChangeText={setPassword}
                 style={registerStyles.input}
               />
-              <Pressable
-                onPress={() => setShowPass((v) => !v)}
-                style={registerStyles.iconBtn}
-              >
+              <Pressable onPress={() => setShowPass(v => !v)}>
                 <Ionicons
                   name={showPass ? "eye-off-outline" : "eye-outline"}
                   size={18}
@@ -126,35 +120,74 @@ export default function RegisterScreen() {
               </Pressable>
             </View>
 
-            {password.length > 0 && password.length < 6 && (
-              <Text style={registerStyles.helper}>
-                Mật khẩu phải có ít nhất 6 ký tự.
+            {/* Confirm */}
+            <Text style={[registerStyles.label, { marginTop: 12 }]}>
+              Xác nhận mật khẩu
+            </Text>
+            <View style={registerStyles.inputWrap}>
+              <TextInput
+                placeholder="••••••••"
+                placeholderTextColor={colors.muted2}
+                secureTextEntry={!showPass}
+                value={confirm}
+                onChangeText={setConfirm}
+                style={registerStyles.input}
+              />
+              <Pressable onPress={() => setShowPass(v => !v)}>
+                <Ionicons
+                  name={showPass ? "eye-off-outline" : "eye-outline"}
+                  size={18}
+                  color={colors.muted}
+                />
+              </Pressable>
+            </View>
+
+            {/* Terms */}
+            <View style={registerStyles.checkboxRow}>
+              <Switch value={accepted} onValueChange={setAccepted} />
+              <Text style={registerStyles.checkboxText}>
+                Tôi đồng ý với{" "}
+                <Text style={registerStyles.linkInline}>Điều khoản</Text> &{" "}
+                <Text style={registerStyles.linkInline}>Chính sách bảo mật</Text>
               </Text>
-            )}
+            </View>
 
             {/* Submit */}
             <Pressable
               onPress={submit}
               disabled={!canSubmit}
-              style={({ pressed }) => [
+              style={[
                 registerStyles.primaryBtn,
                 !canSubmit && registerStyles.primaryBtnDisabled,
-                pressed && canSubmit && { transform: [{ scale: 0.98 }] },
+                { marginTop: 16 },
               ]}
             >
               {loading ? (
                 <ActivityIndicator />
               ) : (
-                <Text style={registerStyles.primaryBtnText}>
-                  Tạo tài khoản
-                </Text>
+                <Text style={registerStyles.primaryBtnText}>Đăng ký</Text>
               )}
             </Pressable>
 
+            {/* Divider */}
+            <View style={registerStyles.dividerRow}>
+              <View style={registerStyles.dividerLine} />
+              <Text style={registerStyles.dividerText}>HOẶC</Text>
+              <View style={registerStyles.dividerLine} />
+            </View>
+
+            {/* Google */}
+            <Pressable style={registerStyles.googleBtn}>
+              <Ionicons name="logo-google" size={18} color="#DB4437" />
+              <Text style={registerStyles.googleText}>
+                Đăng ký bằng Google
+              </Text>
+            </Pressable>
+
             <Text style={registerStyles.footerText}>
-              Đã có tài khoản?{" "}
+              Bạn đã có tài khoản?{" "}
               <Link href="/auth/login" style={registerStyles.link}>
-                Đăng nhập
+                Đăng nhập ngay
               </Link>
             </Text>
           </View>
