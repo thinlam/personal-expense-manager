@@ -168,7 +168,7 @@ export default function ResetPassword() {
       </main>
 
       <footer className="rp-bottom">
-        <div className="rp-bottomLeft">© 2024 SecureFin Intelligence. Bảo mật tuyệt đối.</div>
+        <div className="rp-bottomLeft">© 2026 SecureFin Intelligence. Bảo mật tuyệt đối.</div>
         <div className="rp-bottomRight">
           <span className="rp-bottomLink">Quyền riêng tư</span>
           <span className="rp-sep">•</span>

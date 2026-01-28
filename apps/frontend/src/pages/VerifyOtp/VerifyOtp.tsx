@@ -226,7 +226,7 @@ export default function VerifyOtp() {
       </main>
 
       <footer className="otp-bottom">
-        <div className="otp-bottomLeft">© 2024 SecureFin Intelligence. Bảo mật tuyệt đối.</div>
+        <div className="otp-bottomLeft">© 2026 SecureFin Intelligence. Bảo mật tuyệt đối.</div>
         <div className="otp-bottomRight">
           <span className="otp-bottomLink">Quyền riêng tư</span>
           <span className="otp-sep">•</span>
