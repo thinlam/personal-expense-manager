@@ -87,8 +87,8 @@ export default function Login() {
             <div className="field">
               <div className="labelRow">
                 <div className="label">MẬT KHẨU</div>
-                <Link className="linkSmall" to="/forgot-password">
-                  Quên mật khẩu?
+                <Link to="/forgot-password" className="login-forgot">
+                     Quên mật khẩu?
                 </Link>
               </div>
 
@@ -173,7 +173,7 @@ export default function Login() {
       </main>
 
       <footer className="authFooter">
-        <div className="footerLeft">© 2024 SecureFin Intelligence. Bảo mật tuyệt đối.</div>
+        <div className="footerLeft">© 2026 SecureFin Intelligence. Bảo mật tuyệt đối.</div>
         <div className="footerRight">
           <a href="#" onClick={(e) => e.preventDefault()}>
             Quyền riêng tư

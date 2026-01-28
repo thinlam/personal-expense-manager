@@ -197,7 +197,7 @@ export default function Register() {
 
       {/* Footer */}
       <footer className="regFooter2">
-        <div>© 2024 SecureFin Intelligence. Bảo mật tuyệt đối.</div>
+        <div>© 2026 SecureFin Intelligence. Bảo mật tuyệt đối.</div>
         <div className="footerLinks2">
           <a href="#" onClick={(e) => e.preventDefault()}>
             Quyền riêng tư
