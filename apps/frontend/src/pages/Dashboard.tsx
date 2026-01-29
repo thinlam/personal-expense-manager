@@ -137,6 +137,11 @@ export default function Dashboard() {
             <span className="side__ic">▤</span>
             <span>Báo cáo</span>
           </Link>
+          <Link className="side__item" to="/wallets">
+            <span className="side__ic">💳</span>
+            <span>Ví</span>
+            </Link>
+
 
           <div className="side__sep" />
 
