@@ -13,9 +13,11 @@ const userSchema = new mongoose.Schema(
     resetPasswordOtpExpiresAt: { type: Date, default: null },
     resetPasswordOtpAttempts: { type: Number, default: 0 }, // count wrong tries
     resetPasswordOtpLastSentAt: { type: Date, default: null }, // basic rate limit
+     isPremium: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
+
 
 export type UserDoc = InferSchemaType<typeof userSchema> & mongoose.Document;
 // Quan trọng: model "User" -> collection mặc định "users"

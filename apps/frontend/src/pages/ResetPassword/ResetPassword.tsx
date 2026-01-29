@@ -82,6 +82,7 @@ export default function ResetPassword() {
       sessionStorage.removeItem("rp_otp");
 
       setTimeout(() => nav("/login", { replace: true }), 700);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       setErr(e?.response?.data?.message ?? "Không cập nhật được mật khẩu. Vui lòng thử lại.");
     } finally {
