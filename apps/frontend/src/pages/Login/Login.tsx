@@ -28,7 +28,7 @@ export default function Login() {
       storage.setToken(data.token);
       storage.setUser(data.user);
 
-      nav("/", { replace: true });
+     nav("/dashboard", { replace: true });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err?.response?.data?.message ?? "Đăng nhập thất bại. Vui lòng thử lại.");

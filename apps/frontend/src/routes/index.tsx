@@ -5,6 +5,7 @@ import Register from "../pages/Register/Register";
 import Forgot from "../pages/Forgot/Forgot"; // nếu đã tạo thì mở ra
 import VerifyOtp from "../pages/VerifyOtp/VerifyOtp";
 import ResetPassword from "../pages/ResetPassword/ResetPassword";
+import Dashboard from "../pages/Dashboard";
 export default function AppRoutes() {
   return (
     <Routes>
@@ -16,6 +17,7 @@ export default function AppRoutes() {
       <Route path="/forgot-password" element={<Forgot />} /> 
       <Route path="/verify-otp" element={<VerifyOtp />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
