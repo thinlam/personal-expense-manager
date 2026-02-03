@@ -10,20 +10,30 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); // ✅ NEW
 
   const [agree, setAgree] = useState(true);
   const [showPwd, setShowPwd] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false); // ✅ NEW
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const pwdMismatch = useMemo(() => {
+    // chỉ báo mismatch khi user đã nhập confirm (tránh hiện lỗi quá sớm)
+    if (!confirmPassword) return false;
+    return password !== confirmPassword;
+  }, [password, confirmPassword]);
+
   const canSubmit = useMemo(() => {
     if (name.trim().length < 2) return false;
     if (!email.trim()) return false;
-    if (password.length < 8) return false; // giống ảnh: tối thiểu 8 ký tự
+    if (password.length < 8) return false;
+    if (confirmPassword.length < 8) return false; // ✅ NEW
+    if (password !== confirmPassword) return false; // ✅ NEW
     if (!agree) return false;
     return true;
-  }, [name, email, password, agree]);
+  }, [name, email, password, confirmPassword, agree]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +47,6 @@ export default function Register() {
       storage.setUser(data.user);
 
       nav("/login", { replace: true });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err?.response?.data?.message ?? "Đăng ký thất bại");
     } finally {
@@ -136,6 +145,41 @@ export default function Register() {
                   {showPwd ? <EyeOffIcon /> : <EyeIcon />}
                 </button>
               </div>
+            </div>
+
+            {/* ✅ NEW: Confirm password */}
+            <div className="field2">
+              <div className="label2">NHẬP LẠI MẬT KHẨU</div>
+              <div className="inputWrap2">
+                <span className="leftIcon2" aria-hidden>
+                  <KeyIcon />
+                </span>
+                <input
+                  className="input2"
+                  placeholder="nhập lại mật khẩu"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  type={showConfirm ? "text" : "password"}
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  className="iconBtn2"
+                  onClick={() => setShowConfirm((v) => !v)}
+                  aria-label={showConfirm ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                >
+                  {showConfirm ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+
+              {/* Hiện báo lỗi nhẹ ngay dưới field nếu không khớp */}
+              {pwdMismatch && (
+                <div className="errorBox2" style={{ marginTop: 10 }}>
+                  Mật khẩu nhập lại không khớp.
+                </div>
+              )}
             </div>
 
             <label className="agreeRow2">

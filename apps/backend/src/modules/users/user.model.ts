@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema(
     resetPasswordOtpAttempts: { type: Number, default: 0 }, // count wrong tries
     resetPasswordOtpLastSentAt: { type: Date, default: null }, // basic rate limit
      isPremium: { type: Boolean, default: false },
+     emailVerified: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -1,18 +1,35 @@
-/* FULL SCREEN */
+/* =========================
+   RESET + FULL HEIGHT
+========================= */
+html, body, #root {
+  height: 100%;
+}
+body { margin: 0; }
+
+/* =========================
+   FULL SCREEN PAGE (NO SCROLL OUTSIDE)
+========================= */
 .regPage2{
   width: 100vw;
-  min-height: 100vh;
+  height: 100vh;          /* ✅ FIX: dùng height thay vì min-height */
+  overflow: hidden;       /* ✅ FIX: tắt scroll toàn trang */
+
   margin: 0;
   color: #e8f0ff;
   background:
     radial-gradient(1200px 650px at 18% 15%, rgba(0, 210, 255, 0.10), transparent 55%),
     radial-gradient(1000px 560px at 85% 12%, rgba(16,185,129,0.10), transparent 58%),
     linear-gradient(180deg, #061a2b 0%, #041321 100%);
+
+  /* ✅ FIX: grid chuẩn và không bị “đẩy” vượt 100vh */
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 72px 1fr auto; /* topbar cố định 72px như bạn */
+  min-height: 0;
 }
 
-/* Topbar */
+/* =========================
+   TOPBAR
+========================= */
 .regTopbar2{
   height: 72px;
   padding: 0 28px;
@@ -20,6 +37,7 @@
   align-items:center;
   justify-content:space-between;
 }
+
 .brand2{ display:flex; align-items:center; gap:10px; }
 .brandLogo2{
   width: 38px;
@@ -52,22 +70,43 @@
 }
 .topCta2:hover{ background: rgba(255,255,255,0.10); }
 
-/* Center card */
+/* =========================
+   CENTER (TAKES THE REST HEIGHT)
+========================= */
 .regCenter2{
-  display:grid;
-  place-items:center;
-  padding: 28px;
+  /* ✅ FIX: khu center không làm page scroll */
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* padding vẫn ok nhưng không làm overflow cả page */
+  padding: 22px 28px;
+  overflow: hidden; /* ✅ FIX: không cho center tạo scroll */
 }
+
+/* =========================
+   CARD (SCROLL INSIDE IF NEEDED)
+========================= */
 .regCard2{
   width: min(420px, 100%);
-  padding: 26px 26px 22px;
   border-radius: 18px;
   background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));
   border: 1px solid rgba(255,255,255,0.10);
   box-shadow: 0 30px 80px rgba(0,0,0,0.45);
   backdrop-filter: blur(10px);
+
+  /* ✅ FIX: nếu nội dung dài -> scroll trong card, không scroll page */
+  max-height: 100%;
+  overflow: visible; /* ✅ FIX: bỏ lăn trong card */
+
+  /* padding giữ đúng style của bạn */
+  padding: 26px 26px 22px;
 }
 
+/* =========================
+   HEADER
+========================= */
 .cardHeader2{ text-align:center; margin-bottom: 18px; }
 .cardTitle2{ margin: 0; font-size: 22px; letter-spacing: 0.2px; }
 .cardSub2{
@@ -77,6 +116,9 @@
   line-height: 1.55;
 }
 
+/* =========================
+   FORM
+========================= */
 .form2{ display:grid; gap: 14px; }
 .field2 .label2{
   font-size: 11px;
@@ -85,7 +127,9 @@
   margin-bottom: 8px;
 }
 
-/* Inputs */
+/* =========================
+   INPUTS
+========================= */
 .inputWrap2{
   display:flex;
   align-items:center;
@@ -100,6 +144,7 @@
   border-color: rgba(43, 212, 255, 0.45);
   box-shadow: 0 0 0 4px rgba(43, 212, 255, 0.10), inset 0 1px 0 rgba(255,255,255,0.06);
 }
+
 .leftIcon2{ color: rgba(200, 235, 255, 0.75); display:grid; place-items:center; }
 .input2{
   flex:1;
@@ -124,7 +169,9 @@
   color: rgba(210, 240, 255, 0.95);
 }
 
-/* Agree row */
+/* =========================
+   AGREE ROW
+========================= */
 .agreeRow2{
   display:flex;
   gap: 10px;
@@ -146,7 +193,9 @@
 }
 .agreeRow2 a:hover{ text-decoration: underline; }
 
-/* Error */
+/* =========================
+   ERROR
+========================= */
 .errorBox2{
   padding: 10px 12px;
   border-radius: 12px;
@@ -156,7 +205,9 @@
   font-size: 13px;
 }
 
-/* Primary button */
+/* =========================
+   PRIMARY BUTTON
+========================= */
 .primaryBtn2{
   margin-top: 2px;
   height: 48px;
@@ -188,7 +239,9 @@
   animation: spin 0.9s linear infinite;
 }
 
-/* Divider + Google */
+/* =========================
+   DIVIDER + GOOGLE
+========================= */
 .divider2{
   margin-top: 6px;
   display:flex;
@@ -215,7 +268,9 @@
 }
 .googleBtn2:hover{ filter: brightness(0.98); }
 
-/* Security note */
+/* =========================
+   SECURITY NOTE
+========================= */
 .securityNote2{
   margin-top: 10px;
   display:flex;
@@ -236,7 +291,9 @@
   line-height: 1.5;
 }
 
-/* Footer */
+/* =========================
+   FOOTER
+========================= */
 .regFooter2{
   padding: 18px 28px;
   display:flex;
@@ -245,6 +302,9 @@
   gap: 16px;
   opacity: 0.7;
   font-size: 12px;
+
+  /* ✅ FIX: footer không tạo scroll do nội dung */
+  min-height: 0;
 }
 .footerLinks2{ display:flex; gap: 18px; }
 .footerLinks2 a{
@@ -253,10 +313,18 @@
 }
 .footerLinks2 a:hover{ text-decoration: underline; }
 
+/* =========================
+   ANIM
+========================= */
 @keyframes spin{ from{ transform: rotate(0);} to{ transform: rotate(360deg);} }
 
+/* =========================
+   RESPONSIVE
+========================= */
 @media (max-width: 520px){
   .regTopbar2{ padding: 0 16px; }
+  .regCenter2{ padding: 18px 16px; }
+
   .regFooter2{
     padding: 14px 16px;
     flex-direction: column;
