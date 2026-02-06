@@ -1,5 +1,14 @@
 import { z } from "zod";
+export const registerInitSchema = z.object({
+  name: z.string().min(2),
+  email: z.string().email(),
+  password: z.string().min(8),
+});
 
+export const verifyEmailOtpSchema = z.object({
+  email: z.string().email(),
+  otp: z.string().regex(/^\d{6}$/, "OTP must be 6 digits"),
+});
 export const registerSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),

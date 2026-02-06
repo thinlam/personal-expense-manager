@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authService } from "../../services/auth.service";
-import { storage } from "../../utils/storage";
 import "./register.css";
 
 export default function Register() {
@@ -10,17 +9,16 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // ✅ NEW
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const [agree, setAgree] = useState(true);
   const [showPwd, setShowPwd] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false); // ✅ NEW
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const pwdMismatch = useMemo(() => {
-    // chỉ báo mismatch khi user đã nhập confirm (tránh hiện lỗi quá sớm)
     if (!confirmPassword) return false;
     return password !== confirmPassword;
   }, [password, confirmPassword]);
@@ -29,8 +27,8 @@ export default function Register() {
     if (name.trim().length < 2) return false;
     if (!email.trim()) return false;
     if (password.length < 8) return false;
-    if (confirmPassword.length < 8) return false; // ✅ NEW
-    if (password !== confirmPassword) return false; // ✅ NEW
+    if (confirmPassword.length < 8) return false;
+    if (password !== confirmPassword) return false;
     if (!agree) return false;
     return true;
   }, [name, email, password, confirmPassword, agree]);
@@ -41,12 +39,15 @@ export default function Register() {
 
     setError(null);
     setLoading(true);
-    try {
-      const data = await authService.register({ name, email, password });
-      storage.setToken(data.token);
-      storage.setUser(data.user);
 
-      nav("/login", { replace: true });
+    try {
+      await authService.registerInit({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      nav("/verify-email", { replace: true, state: { email: email.trim().toLowerCase() } });
     } catch (err: any) {
       setError(err?.response?.data?.message ?? "Đăng ký thất bại");
     } finally {
@@ -147,7 +148,6 @@ export default function Register() {
               </div>
             </div>
 
-            {/* ✅ NEW: Confirm password */}
             <div className="field2">
               <div className="label2">NHẬP LẠI MẬT KHẨU</div>
               <div className="inputWrap2">
@@ -174,7 +174,6 @@ export default function Register() {
                 </button>
               </div>
 
-              {/* Hiện báo lỗi nhẹ ngay dưới field nếu không khớp */}
               {pwdMismatch && (
                 <div className="errorBox2" style={{ marginTop: 10 }}>
                   Mật khẩu nhập lại không khớp.
@@ -183,11 +182,7 @@ export default function Register() {
             </div>
 
             <label className="agreeRow2">
-              <input
-                type="checkbox"
-                checked={agree}
-                onChange={(e) => setAgree(e.target.checked)}
-              />
+              <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
               <span>
                 Tôi đồng ý với các{" "}
                 <a href="#" onClick={(e) => e.preventDefault()}>
@@ -207,7 +202,7 @@ export default function Register() {
               {loading ? (
                 <span className="btnLoading2">
                   <span className="spinner2" aria-hidden />
-                  Đang tạo tài khoản...
+                  Đang gửi OTP...
                 </span>
               ) : (
                 <span className="btnRow2">
@@ -239,7 +234,6 @@ export default function Register() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="regFooter2">
         <div>© 2026 SecureFin Intelligence. Bảo mật tuyệt đối.</div>
         <div className="footerLinks2">
@@ -274,17 +268,8 @@ function LockIcon() {
 function UserIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M12 12a4.2 4.2 0 1 0-4.2-4.2A4.2 4.2 0 0 0 12 12Z"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path
-        d="M4.5 20a7.5 7.5 0 0 1 15 0"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+      <path d="M12 12a4.2 4.2 0 1 0-4.2-4.2A4.2 4.2 0 0 0 12 12Z" stroke="currentColor" strokeWidth="2" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -296,7 +281,13 @@ function MailIcon() {
         stroke="currentColor"
         strokeWidth="2"
       />
-      <path d="M5.5 7l6.5 5 6.5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M5.5 7l6.5 5 6.5-5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
