@@ -1,0 +1,40 @@
+.settings{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap:16px;
+}
+
+.form{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.form label{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:14px;
+}
+
+.form input,
+.form select{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:#0b1220;
+  color:#e8f0ff;
+}
+
+.btn{
+  margin-top:8px;
+}
+
+.btn--danger{
+  background:#dc2626;
+}
+
+.btn--ghost{
+  background:transparent;
+  border:1px dashed var(--border);
+}
