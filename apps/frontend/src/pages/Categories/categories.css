@@ -1,0 +1,282 @@
+/* ================= PAGE BACKGROUND ================= */
+.categories-page {
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color: #eaf2ff;
+
+  background:
+    radial-gradient(1200px 600px at 50% 15%, rgba(255,255,255,0.05), transparent 60%),
+    linear-gradient(180deg, #0b3a56 0%, #062a44 100%);
+
+  padding: 60px 80px 120px;
+}
+
+/* ================= HEADER ================= */
+.categories-header {
+  margin-bottom: 50px;
+}
+
+.categories-title {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.categories-subtitle {
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+/* ================= MAIN CARD ================= */
+.categories-card {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+
+  border-radius: 24px;
+  padding: 50px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.07),
+    rgba(255,255,255,0.03)
+  );
+
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 30px 100px rgba(0,0,0,0.45);
+}
+
+/* ================= FORM GRID ================= */
+.cat-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr 1fr auto;
+  gap: 16px;
+  margin-bottom: 35px;
+}
+
+/* ================= INPUT / SELECT ================= */
+.cat-form input,
+.cat-form select,
+.categories-tools input {
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.30);
+  color: #eaf2ff;
+  font-size: 14px;
+  outline: none;
+  transition: 0.25s;
+}
+
+.cat-form input::placeholder,
+.categories-tools input::placeholder {
+  color: rgba(234,242,255,0.45);
+}
+
+.cat-form input:focus,
+.cat-form select:focus,
+.categories-tools input:focus {
+  border-color: #12a3ff;
+  box-shadow: 0 0 0 2px rgba(18,163,255,0.25);
+}
+
+/* ================= PRIMARY BUTTON ================= */
+.cat-btn,
+.categories-tools button {
+  padding: 14px 20px;
+  border-radius: 16px;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.25s;
+
+  background: linear-gradient(180deg, #12a3ff 0%, #0b7fd6 100%);
+  color: white;
+}
+
+.cat-btn:hover,
+.categories-tools button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(18,163,255,0.35);
+}
+
+/* ================= SUGGEST + IMPORT ROW ================= */
+.categories-tools {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 50px;
+  align-items: center;
+}
+
+/* ================= SECTION TITLE ================= */
+.categories-sectionTitle {
+  margin: 50px 0 25px;
+  font-size: 20px;
+  font-weight: 700;
+  padding-left: 14px;
+  border-left: 4px solid #12a3ff;
+}
+
+/* ================= CATEGORY ITEM ================= */
+.cat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 18px 24px;
+  margin-bottom: 16px;
+
+  border-radius: 18px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+
+  transition: 0.3s;
+}
+
+.cat-item:hover {
+  background: rgba(255,255,255,0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+/* ================= LEFT SIDE ================= */
+.cat-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* ================= ICON ================= */
+.cat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 22px;
+  color: white;
+}
+
+/* ================= NAME ================= */
+.cat-name {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.cat-type {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 5px;
+}
+
+/* ================= ACTION BUTTONS ================= */
+.cat-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.cat-actionBtn {
+  padding: 8px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: #eaf2ff;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.cat-actionBtn:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+/* ================= FAVORITE ================= */
+.cat-favorite {
+  color: gold;
+  margin-left: 8px;
+}
+
+/* ================= SYSTEM BADGE ================= */
+.cat-system {
+  font-size: 12px;
+  color: #40dca0;
+  margin-left: 8px;
+}
+
+/* ================= TREE CHILD ================= */
+.cat-children {
+  margin-left: 90px;
+  margin-top: 15px;
+  border-left: 2px dashed rgba(255,255,255,0.15);
+  padding-left: 25px;
+}
+
+/* ================= EMPTY ================= */
+.cat-empty {
+  opacity: 0.4;
+  font-size: 15px;
+  margin-bottom: 40px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1400px) {
+  .categories-page {
+    padding: 50px 50px 100px;
+  }
+
+  .cat-form {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .categories-page {
+    padding: 40px 25px 80px;
+  }
+
+  .categories-card {
+    padding: 30px;
+  }
+
+  .cat-form {
+    grid-template-columns: 1fr;
+  }
+
+  .categories-tools {
+    flex-direction: column;
+  }
+
+  .edit-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.08);
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.cancel-btn {
+  background: transparent;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background: #ef4444;
+  color: white;
+}
+}

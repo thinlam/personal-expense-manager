@@ -141,6 +141,10 @@ export default function Dashboard() {
             <span className="side__ic">💳</span>
             <span>Ví</span>
             </Link>
+          <Link className="side__item" to="/categories">
+             <span className="side__ic">🗂</span>
+             <span>Danh mục</span>
+            </Link>
 
 
           <div className="side__sep" />
