@@ -33,7 +33,14 @@ export async function updateMe(req: AuthRequest, res: Response) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const { name, avatar, language, currency, weekStart } = req.body;
+    const {
+      name,
+      avatar,
+      language,
+      currency,
+      dateFormat,
+      weekStart,
+    } = req.body;
 
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
@@ -42,6 +49,7 @@ export async function updateMe(req: AuthRequest, res: Response) {
         ...(avatar !== undefined ? { avatar } : {}),
         ...(language !== undefined ? { language } : {}),
         ...(currency !== undefined ? { currency } : {}),
+        ...(dateFormat !== undefined ? { dateFormat } : {}),
         ...(weekStart !== undefined ? { weekStart } : {}),
       },
       { new: true, runValidators: true }
@@ -52,7 +60,7 @@ export async function updateMe(req: AuthRequest, res: Response) {
     }
 
     return res.json({
-      message: "Cập nhật hồ sơ thành công",
+      message: "Cập nhật thiết lập thành công",
       user: updatedUser,
     });
   } catch (error) {

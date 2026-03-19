@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./settings.css";
 import {
   getCurrentUser,
@@ -24,11 +25,14 @@ type MenuKey =
   | "bank";
 
 export default function Settings() {
+  const navigate = useNavigate();
+
   const [activeMenu, setActiveMenu] = useState<MenuKey>("profile");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [name, setName] = useState("");
@@ -63,6 +67,22 @@ export default function Settings() {
     fetchProfile();
   }, []);
 
+  useEffect(() => {
+    function handleEsc(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setShowLogoutModal(false);
+      }
+    }
+
+    if (showLogoutModal) {
+      window.addEventListener("keydown", handleEsc);
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, [showLogoutModal]);
+
   async function handleSaveProfile() {
     try {
       setSaving(true);
@@ -83,6 +103,22 @@ export default function Settings() {
     } finally {
       setSaving(false);
     }
+  }
+
+  function openLogoutModal() {
+    setShowLogoutModal(true);
+  }
+
+  function closeLogoutModal() {
+    setShowLogoutModal(false);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+
+    navigate("/login", { replace: true });
   }
 
   const displayName = user?.name || "Người dùng";
@@ -206,7 +242,10 @@ export default function Settings() {
               <p className="sidebarLabel">CÀI ĐẶT TÀI KHOẢN</p>
 
               <button
-                className={`sideMenuBtn ${activeMenu === "profile" ? "sideMenuBtn--active" : ""}`}
+                type="button"
+                className={`sideMenuBtn ${
+                  activeMenu === "profile" ? "sideMenuBtn--active" : ""
+                }`}
                 onClick={() => setActiveMenu("profile")}
               >
                 <span className="sideMenuIcon">👤</span>
@@ -214,7 +253,10 @@ export default function Settings() {
               </button>
 
               <button
-                className={`sideMenuBtn ${activeMenu === "notifications" ? "sideMenuBtn--active" : ""}`}
+                type="button"
+                className={`sideMenuBtn ${
+                  activeMenu === "notifications" ? "sideMenuBtn--active" : ""
+                }`}
                 onClick={() => setActiveMenu("notifications")}
               >
                 <span className="sideMenuIcon">🔔</span>
@@ -222,7 +264,10 @@ export default function Settings() {
               </button>
 
               <button
-                className={`sideMenuBtn ${activeMenu === "security" ? "sideMenuBtn--active" : ""}`}
+                type="button"
+                className={`sideMenuBtn ${
+                  activeMenu === "security" ? "sideMenuBtn--active" : ""
+                }`}
                 onClick={() => setActiveMenu("security")}
               >
                 <span className="sideMenuIcon">🛡️</span>
@@ -230,7 +275,10 @@ export default function Settings() {
               </button>
 
               <button
-                className={`sideMenuBtn ${activeMenu === "account" ? "sideMenuBtn--active" : ""}`}
+                type="button"
+                className={`sideMenuBtn ${
+                  activeMenu === "account" ? "sideMenuBtn--active" : ""
+                }`}
                 onClick={() => setActiveMenu("account")}
               >
                 <span className="sideMenuIcon">⚙️</span>
@@ -242,7 +290,10 @@ export default function Settings() {
               <p className="sidebarLabel">DỊCH VỤ & KẾT NỐI</p>
 
               <button
-                className={`sideMenuBtn premiumBtn ${activeMenu === "premium" ? "sideMenuBtn--active" : ""}`}
+                type="button"
+                className={`sideMenuBtn premiumBtn ${
+                  activeMenu === "premium" ? "sideMenuBtn--active" : ""
+                }`}
                 onClick={() => setActiveMenu("premium")}
               >
                 <span className="sideMenuIcon">⭐</span>
@@ -251,7 +302,10 @@ export default function Settings() {
               </button>
 
               <button
-                className={`sideMenuBtn ${activeMenu === "bank" ? "sideMenuBtn--active" : ""}`}
+                type="button"
+                className={`sideMenuBtn ${
+                  activeMenu === "bank" ? "sideMenuBtn--active" : ""
+                }`}
                 onClick={() => setActiveMenu("bank")}
               >
                 <span className="sideMenuIcon">🏦</span>
@@ -268,7 +322,15 @@ export default function Settings() {
                 <div className="sidebarPlan">{displayPlan}</div>
               </div>
             </div>
-            <button className="sidebarLogout">↪</button>
+
+            <button
+              type="button"
+              className="sidebarLogout"
+              onClick={openLogoutModal}
+              title="Đăng xuất"
+            >
+              ↪
+            </button>
           </div>
         </aside>
 
@@ -285,6 +347,47 @@ export default function Settings() {
           {renderSection()}
         </main>
       </div>
+
+      {showLogoutModal && (
+        <div className="logoutModalOverlay" onClick={closeLogoutModal}>
+          <div
+            className="logoutModal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="logout-modal-title"
+          >
+            <div className="logoutModal__icon">↪</div>
+
+            <div className="logoutModal__content">
+              <h3 id="logout-modal-title" className="logoutModal__title">
+                Xác nhận đăng xuất
+              </h3>
+              <p className="logoutModal__desc">
+                Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này không?
+              </p>
+            </div>
+
+            <div className="logoutModal__actions">
+              <button
+                type="button"
+                className="logoutModalBtn logoutModalBtn--ghost"
+                onClick={closeLogoutModal}
+              >
+                Ở lại
+              </button>
+
+              <button
+                type="button"
+                className="logoutModalBtn logoutModalBtn--danger"
+                onClick={handleLogout}
+              >
+                Đăng xuất
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

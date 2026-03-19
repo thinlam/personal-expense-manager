@@ -1,5 +1,7 @@
 import { api } from "./api";
 
+export type DateFormat = "DD/MM/YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD";
+
 export type CurrentUser = {
   _id: string;
   name: string;
@@ -9,6 +11,7 @@ export type CurrentUser = {
   isPremium?: boolean;
   language?: "vi" | "en";
   currency?: "VND" | "USD" | "EUR";
+  dateFormat?: DateFormat;
   weekStart?: "mon" | "sun";
 };
 
@@ -22,6 +25,7 @@ export async function updateCurrentUser(payload: {
   avatar?: string;
   language?: "vi" | "en";
   currency?: "VND" | "USD" | "EUR";
+  dateFormat?: DateFormat;
   weekStart?: "mon" | "sun";
 }) {
   const res = await api.patch<{

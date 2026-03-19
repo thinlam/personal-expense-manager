@@ -14,16 +14,25 @@ const userSchema = new mongoose.Schema(
 
     // ========================= Profile / Settings =========================
     avatar: { type: String, default: "" },
+
     language: {
       type: String,
       enum: ["vi", "en"],
       default: "vi",
     },
+
     currency: {
       type: String,
       enum: ["VND", "USD", "EUR"],
       default: "VND",
     },
+
+    dateFormat: {
+      type: String,
+      enum: ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD"],
+      default: "DD/MM/YYYY",
+    },
+
     weekStart: {
       type: String,
       enum: ["mon", "sun"],
