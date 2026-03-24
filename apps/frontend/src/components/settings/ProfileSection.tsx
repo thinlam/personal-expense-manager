@@ -1,6 +1,8 @@
 import type { DateFormat } from "../../services/user.service";
 import { dict } from "../../utils/i18n";
 
+type TimeFormat = "24h" | "12h";
+
 type Props = {
   name: string;
   email: string;
@@ -8,6 +10,7 @@ type Props = {
   weekStart: "mon" | "sun";
   currency: "VND" | "USD" | "EUR";
   dateFormat: DateFormat;
+  timeFormat: TimeFormat;
   avatarText: string;
   saving: boolean;
   onNameChange: (value: string) => void;
@@ -15,6 +18,7 @@ type Props = {
   onWeekStartChange: (value: "mon" | "sun") => void;
   onCurrencyChange: (value: "VND" | "USD" | "EUR") => void;
   onDateFormatChange: (value: DateFormat) => void;
+  onTimeFormatChange: (value: TimeFormat) => void;
   onSave: () => void;
 };
 
@@ -25,6 +29,7 @@ export default function ProfileSection({
   weekStart,
   currency,
   dateFormat,
+  timeFormat,
   avatarText,
   saving,
   onNameChange,
@@ -32,9 +37,15 @@ export default function ProfileSection({
   onWeekStartChange,
   onCurrencyChange,
   onDateFormatChange,
+  onTimeFormatChange,
   onSave,
 }: Props) {
   const t = dict[language];
+
+  const previewText = formatDateTimePreview(dateFormat, timeFormat);
+
+  const timeFormatLabel = language === "vi" ? "Định dạng giờ" : "Time format";
+  const previewLabel = language === "vi" ? "Xem trước ngày giờ" : "Date & time preview";
 
   return (
     <>
@@ -187,6 +198,26 @@ export default function ProfileSection({
           </div>
 
           <div className="field">
+            <label>{timeFormatLabel}</label>
+            <div className="segmented segmented--double">
+              <button
+                className={timeFormat === "24h" ? "segmented__item active" : "segmented__item"}
+                onClick={() => onTimeFormatChange("24h")}
+                type="button"
+              >
+                24h
+              </button>
+              <button
+                className={timeFormat === "12h" ? "segmented__item active" : "segmented__item"}
+                onClick={() => onTimeFormatChange("12h")}
+                type="button"
+              >
+                12h (AM/PM)
+              </button>
+            </div>
+          </div>
+
+          <div className="field">
             <label>{t.weekStart}</label>
             <div className="segmented">
               <button
@@ -207,6 +238,11 @@ export default function ProfileSection({
           </div>
         </div>
 
+        <div className="dateTimePreviewBox">
+          <span className="dateTimePreviewBox__label">{previewLabel}</span>
+          <strong className="dateTimePreviewBox__value">{previewText}</strong>
+        </div>
+
         <div style={{ marginTop: 20 }}>
           <button className="btnPrimary" type="button" onClick={onSave} disabled={saving}>
             {saving ? (language === "vi" ? "Đang lưu..." : "Saving...") : t.saveSettings}
@@ -215,4 +251,44 @@ export default function ProfileSection({
       </section>
     </>
   );
+}
+
+function formatDateTimePreview(dateFormat: DateFormat, timeFormat: TimeFormat) {
+  const sampleDate = new Date(2026, 2, 19, 21, 8, 0);
+
+  const dd = String(sampleDate.getDate()).padStart(2, "0");
+  const mm = String(sampleDate.getMonth() + 1).padStart(2, "0");
+  const yyyy = sampleDate.getFullYear();
+
+  let datePart = "";
+
+  switch (dateFormat) {
+    case "DD/MM/YYYY":
+      datePart = `${dd}/${mm}/${yyyy}`;
+      break;
+    case "MM/DD/YYYY":
+      datePart = `${mm}/${dd}/${yyyy}`;
+      break;
+    case "YYYY-MM-DD":
+      datePart = `${yyyy}-${mm}-${dd}`;
+      break;
+    default:
+      datePart = `${dd}/${mm}/${yyyy}`;
+      break;
+  }
+
+  const hour = sampleDate.getHours();
+  const minute = String(sampleDate.getMinutes()).padStart(2, "0");
+
+  let timePart = "";
+
+  if (timeFormat === "24h") {
+    timePart = `${String(hour).padStart(2, "0")}:${minute}`;
+  } else {
+    const suffix = hour >= 12 ? "PM" : "AM";
+    const hour12 = hour % 12 || 12;
+    timePart = `${String(hour12).padStart(2, "0")}:${minute} ${suffix}`;
+  }
+
+  return `${datePart} • ${timePart}`;
 }
