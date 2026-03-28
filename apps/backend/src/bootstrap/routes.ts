@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authRouter } from "../modules/auth/auth.routes";
+import authRouter from "../modules/auth/auth.routes";
 
 export function buildRoutes() {
   const router = Router();
@@ -7,3 +7,4 @@ export function buildRoutes() {
   router.use("/auth", authRouter);
   return router;
 }
+  
