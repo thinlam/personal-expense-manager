@@ -140,7 +140,7 @@ export default function Dashboard() {
           <Link className="side__item" to="/wallets">
             <span className="side__ic">💳</span>
             <span>Ví</span>
-            </Link>
+          </Link>
 
 
           <div className="side__sep" />
