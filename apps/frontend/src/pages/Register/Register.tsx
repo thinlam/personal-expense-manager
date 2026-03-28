@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authService } from "../../services/auth.service";
-import { storage } from "../../utils/storage";
 import "./register.css";
 
 export default function Register() {
@@ -10,20 +9,29 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const [agree, setAgree] = useState(true);
   const [showPwd, setShowPwd] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const pwdMismatch = useMemo(() => {
+    if (!confirmPassword) return false;
+    return password !== confirmPassword;
+  }, [password, confirmPassword]);
+
   const canSubmit = useMemo(() => {
     if (name.trim().length < 2) return false;
     if (!email.trim()) return false;
-    if (password.length < 8) return false; // giống ảnh: tối thiểu 8 ký tự
+    if (password.length < 8) return false;
+    if (confirmPassword.length < 8) return false;
+    if (password !== confirmPassword) return false;
     if (!agree) return false;
     return true;
-  }, [name, email, password, agree]);
+  }, [name, email, password, confirmPassword, agree]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,13 +39,15 @@ export default function Register() {
 
     setError(null);
     setLoading(true);
-    try {
-      const data = await authService.register({ name, email, password });
-      storage.setToken(data.token);
-      storage.setUser(data.user);
 
-      nav("/login", { replace: true });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    try {
+      await authService.registerInit({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      nav("/verify-email", { replace: true, state: { email: email.trim().toLowerCase() } });
     } catch (err: any) {
       setError(err?.response?.data?.message ?? "Đăng ký thất bại");
     } finally {
@@ -138,12 +148,41 @@ export default function Register() {
               </div>
             </div>
 
+            <div className="field2">
+              <div className="label2">NHẬP LẠI MẬT KHẨU</div>
+              <div className="inputWrap2">
+                <span className="leftIcon2" aria-hidden>
+                  <KeyIcon />
+                </span>
+                <input
+                  className="input2"
+                  placeholder="nhập lại mật khẩu"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  type={showConfirm ? "text" : "password"}
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  className="iconBtn2"
+                  onClick={() => setShowConfirm((v) => !v)}
+                  aria-label={showConfirm ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                >
+                  {showConfirm ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+
+              {pwdMismatch && (
+                <div className="errorBox2" style={{ marginTop: 10 }}>
+                  Mật khẩu nhập lại không khớp.
+                </div>
+              )}
+            </div>
+
             <label className="agreeRow2">
-              <input
-                type="checkbox"
-                checked={agree}
-                onChange={(e) => setAgree(e.target.checked)}
-              />
+              <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
               <span>
                 Tôi đồng ý với các{" "}
                 <a href="#" onClick={(e) => e.preventDefault()}>
@@ -163,7 +202,7 @@ export default function Register() {
               {loading ? (
                 <span className="btnLoading2">
                   <span className="spinner2" aria-hidden />
-                  Đang tạo tài khoản...
+                  Đang gửi OTP...
                 </span>
               ) : (
                 <span className="btnRow2">
@@ -195,7 +234,6 @@ export default function Register() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="regFooter2">
         <div>© 2026 SecureFin Intelligence. Bảo mật tuyệt đối.</div>
         <div className="footerLinks2">
@@ -230,17 +268,8 @@ function LockIcon() {
 function UserIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M12 12a4.2 4.2 0 1 0-4.2-4.2A4.2 4.2 0 0 0 12 12Z"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path
-        d="M4.5 20a7.5 7.5 0 0 1 15 0"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+      <path d="M12 12a4.2 4.2 0 1 0-4.2-4.2A4.2 4.2 0 0 0 12 12Z" stroke="currentColor" strokeWidth="2" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -252,7 +281,13 @@ function MailIcon() {
         stroke="currentColor"
         strokeWidth="2"
       />
-      <path d="M5.5 7l6.5 5 6.5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M5.5 7l6.5 5 6.5-5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

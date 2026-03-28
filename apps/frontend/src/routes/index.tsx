@@ -6,7 +6,10 @@ import Forgot from "../pages/Forgot/Forgot"; // nếu đã tạo thì mở ra
 import VerifyOtp from "../pages/VerifyOtp/VerifyOtp";
 import ResetPassword from "../pages/ResetPassword/ResetPassword";
 import Dashboard from "../pages/Dashboard";
+import VerifyEmailOtp from "../pages/VerifyEmailOtp/VerifyEmailOtp";
 // import Wallets from "../pages/Wallets";
+import Settings from "../pages/Settings";
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -19,6 +22,9 @@ export default function AppRoutes() {
       <Route path="/verify-otp" element={<VerifyOtp />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/verify-email" element={<VerifyEmailOtp />} />
+      <Route path="/settings" element={<Settings />} />
+
       {/* <Route path="/wallets" element={<Wallets />} /> */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
