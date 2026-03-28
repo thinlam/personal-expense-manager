@@ -1,0 +1,60 @@
+.veWrap{
+  min-height: 100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 24px;
+  background: radial-gradient(1200px 650px at 18% 15%, rgba(0, 210, 255, 0.10), transparent 55%),
+              radial-gradient(1000px 560px at 85% 12%, rgba(16,185,129,0.10), transparent 58%),
+              linear-gradient(180deg, #061a2b 0%, #041321 100%);
+  color:#e8f0ff;
+}
+.veCard{
+  width: 460px;
+  max-width: 100%;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 18px;
+  background: rgba(10,16,13,.35);
+  box-shadow: 0 18px 60px rgba(0,0,0,.35);
+  padding: 18px;
+}
+.veForm{ margin-top: 14px; display:flex; flex-direction:column; gap:10px; }
+.veInput{
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.18);
+  color:#e8f0ff;
+  padding: 0 14px;
+  font-size: 16px;
+  outline: none;
+}
+.veBtn{
+  height: 46px;
+  border-radius: 14px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 800;
+}
+.veBtn:disabled{ opacity:.6; cursor:not-allowed; }
+.veLink{
+  background: none;
+  border: 0;
+  color: rgba(232,240,255,.85);
+  text-decoration: underline;
+  cursor:pointer;
+  padding: 6px 0;
+}
+.veErr{
+  border:1px solid rgba(255,71,71,.35);
+  background: rgba(255,71,71,.10);
+  padding: 10px 12px;
+  border-radius: 14px;
+}
+.veMsg{
+  border:1px solid rgba(16,185,129,.35);
+  background: rgba(16,185,129,.10);
+  padding: 10px 12px;
+  border-radius: 14px;
+}
+.veBack a{ color: rgba(232,240,255,.85); }
