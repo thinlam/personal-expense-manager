@@ -58,15 +58,20 @@ export const AuthController = {
   },
 
   async forgotPassword(req: Request, res: Response) {
-    const parsed = forgotPasswordSchema.safeParse(req.body);
-    if (!parsed.success) return res.status(400).json({ message: "Invalid data", issues: parsed.error.issues });
+  const parsed = forgotPasswordSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ message: "Invalid data", issues: parsed.error.issues });
 
-    const result = await AuthService.forgotPassword(parsed.data);
-    // ✅ FIX: result.astatus -> result.status
-    if (!result.ok) return res.status((result as any).status || 400).json({ message: result.message });
+  const result = await AuthService.forgotPassword(parsed.data);
 
-    return res.status(200).json({ message: result.message });
-  },
+  // ✅ thường forgotPassword luôn trả ok=true để chống dò email
+  // nhưng nếu service trả ok=false thì fallback status cho chắc
+  if (!result.ok) {
+    const status = (result as any).status ?? 400;
+    return res.status(status).json({ message: result.message });
+  }
+
+  return res.status(200).json({ message: result.message });
+},
 
   async resetPassword(req: Request, res: Response) {
     const parsed = resetPasswordSchema.safeParse(req.body);

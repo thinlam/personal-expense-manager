@@ -7,7 +7,7 @@ export const api = axios.create({
   timeout: 15000,
 });
 
-api.interceptors.request.use((config) => {
+api.interceptors.request.use((config: { url: string; headers: {}; }) => {
   // ✅ (Option) Không gắn token cho login/register
   const url = config.url || "";
   const skipAuth =
