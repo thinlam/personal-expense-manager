@@ -6,6 +6,7 @@ import authRouter from "./modules/auth/auth.routes";
 import dashboardRouter from "./modules/dashboard/dashboard.routes";
 import transactionRouter from "./modules/transactions/transaction.routes";
 import budgetRouter from "./modules/budgets/budget.routes";
+import reportRouter from "./modules/reports/report.routes";
 // import walletRouter from "./modules/wallet/wallet.routes";
 
 export function createApp() {
@@ -36,6 +37,9 @@ export function createApp() {
 
   // ✅ Budgets (F. 59–68)
   app.use("/api/budgets", budgetRouter);
+
+  // ✅ Reports / Analytics (G. 69–75)
+  app.use("/api/reports", reportRouter);
 
   // app.use("/api/wallets", walletRouter);
 
