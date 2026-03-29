@@ -4,8 +4,10 @@ import { env } from "../../config/env";
 import { UserModel } from "../users/user.model";
 import { EmailOtpModel } from "./emailOtp.model";
 import { generateOtp6, sha256, timingSafeEqualHex } from "../../utils/crypto";
-import { sendForgotPasswordOtpEmail } from "../shared/mailer"; // nếu sai path, xem ghi chú bên dưới
-
+import {
+  sendForgotPasswordOtpEmail,
+  sendVerifyEmailOtpEmail,
+} from "../shared/mailer";
 // ✅ đảm bảo JWT_SECRET luôn là string (tránh lỗi overload của jwt.sign)
 const JWT_SECRET: string = String(env.JWT_SECRET || "");
 if (!JWT_SECRET) {

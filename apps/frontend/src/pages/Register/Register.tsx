@@ -1,7 +1,20 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { isAxiosError } from "axios";
 import { authService } from "../../services/auth.service";
 import "./register.css";
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (isAxiosError<{ message?: string }>(error)) {
+    return error.response?.data?.message ?? error.message ?? fallback;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return fallback;
+}
 
 export default function Register() {
   const nav = useNavigate();
@@ -33,7 +46,7 @@ export default function Register() {
     return true;
   }, [name, email, password, confirmPassword, agree]);
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!canSubmit) return;
 
@@ -47,9 +60,12 @@ export default function Register() {
         password,
       });
 
-      nav("/verify-email", { replace: true, state: { email: email.trim().toLowerCase() } });
-    } catch (err: any) {
-      setError(err?.response?.data?.message ?? "Đăng ký thất bại");
+      nav("/verify-email-otp", {
+        replace: true,
+        state: { email: email.trim().toLowerCase() },
+      });
+    } catch (error: unknown) {
+      setError(getErrorMessage(error, "Đăng ký thất bại"));
     } finally {
       setLoading(false);
     }
@@ -57,7 +73,6 @@ export default function Register() {
 
   return (
     <div className="regPage2">
-      {/* Topbar */}
       <header className="regTopbar2">
         <div className="brand2">
           <div className="brandLogo2" aria-hidden>
@@ -74,7 +89,6 @@ export default function Register() {
         </div>
       </header>
 
-      {/* Center */}
       <main className="regCenter2">
         <section className="regCard2">
           <div className="cardHeader2">
@@ -182,7 +196,11 @@ export default function Register() {
             </div>
 
             <label className="agreeRow2">
-              <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
+              <input
+                type="checkbox"
+                checked={agree}
+                onChange={(e) => setAgree(e.target.checked)}
+              />
               <span>
                 Tôi đồng ý với các{" "}
                 <a href="#" onClick={(e) => e.preventDefault()}>
@@ -217,7 +235,11 @@ export default function Register() {
               <div className="line2" />
             </div>
 
-            <button type="button" className="googleBtn2" onClick={() => alert("TODO: Google OAuth")}>
+            <button
+              type="button"
+              className="googleBtn2"
+              onClick={() => alert("TODO: Google OAuth")}
+            >
               <GoogleIcon />
               <span>Sign in with Google</span>
             </button>
