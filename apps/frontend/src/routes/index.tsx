@@ -11,12 +11,14 @@ import Dashboard from "../pages/Dashboard";
 import TransactionsList from "../pages/Transactions/TransactionsList.tsx";
 import TransactionNew from "../pages/Transactions/TransactionNew.tsx";
 import Budgets from "../pages/Budgets/Budgets.tsx";
+import Reports from "../pages/Reports/Reports";
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
 
+      {/* Auth */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
@@ -28,13 +30,20 @@ export default function AppRoutes() {
       {/* Xác minh email khi đăng ký */}
       <Route path="/verify-email-otp" element={<VerifyEmailOtp />} />
 
+      {/* Main pages */}
       <Route path="/dashboard" element={<Dashboard />} />
 
+      {/* Transactions */}
       <Route path="/transactions" element={<TransactionsList />} />
       <Route path="/transactions/new" element={<TransactionNew />} />
 
+      {/* Budgets */}
       <Route path="/budgets" element={<Budgets />} />
 
+      {/* Reports / Analytics */}
+      <Route path="/reports" element={<Reports />} />
+
+      {/* Fallback */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
