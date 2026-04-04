@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import type { AxiosError } from "axios";
 import "./settings.css";
 import {
   getCurrentUser,
@@ -24,6 +25,15 @@ type MenuKey =
   | "premium"
   | "bank";
 
+type ApiErrorResponse = {
+  message?: string;
+};
+
+function getErrorMessage(error: unknown, fallback: string) {
+  const axiosError = error as AxiosError<ApiErrorResponse>;
+  return axiosError.response?.data?.message || fallback;
+}
+
 export default function Settings() {
   const navigate = useNavigate();
 
@@ -40,6 +50,10 @@ export default function Settings() {
   const [language, setLanguage] = useState<"vi" | "en">("vi");
   const [weekStart, setWeekStart] = useState<"mon" | "sun">("mon");
   const [currency, setCurrency] = useState<"VND" | "USD" | "EUR">("VND");
+  const [dateFormat, setDateFormat] = useState<
+    "DD/MM/YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD"
+  >("DD/MM/YYYY");
+  const [timeFormat, setTimeFormat] = useState<"12h" | "24h">("24h");
 
   useEffect(() => {
     async function fetchProfile() {
@@ -55,10 +69,10 @@ export default function Settings() {
         setLanguage(data.language || "vi");
         setWeekStart(data.weekStart || "mon");
         setCurrency(data.currency || "VND");
-      } catch (err: any) {
-        setError(
-          err?.response?.data?.message || "Không lấy được thông tin người dùng"
-        );
+        setDateFormat(data.dateFormat || "DD/MM/YYYY");
+        setTimeFormat(data.timeFormat || "24h");
+      } catch (err: unknown) {
+        setError(getErrorMessage(err, "Không lấy được thông tin người dùng"));
       } finally {
         setLoading(false);
       }
@@ -94,12 +108,14 @@ export default function Settings() {
         language,
         currency,
         weekStart,
+        dateFormat,
+        timeFormat,
       });
 
       setUser(res.user);
       setSuccess(res.message || "Lưu thay đổi thành công");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Không thể cập nhật hồ sơ");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Không thể cập nhật hồ sơ"));
     } finally {
       setSaving(false);
     }
@@ -173,12 +189,16 @@ export default function Settings() {
             language={language}
             weekStart={weekStart}
             currency={currency}
+            dateFormat={dateFormat}
+            timeFormat={timeFormat}
             avatarText={avatarText}
             saving={saving}
             onNameChange={setName}
             onLanguageChange={setLanguage}
             onWeekStartChange={setWeekStart}
             onCurrencyChange={setCurrency}
+            onDateFormatChange={setDateFormat}
+            onTimeFormatChange={setTimeFormat}
             onSave={handleSaveProfile}
           />
         );
