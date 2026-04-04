@@ -33,6 +33,12 @@ const userSchema = new mongoose.Schema(
       default: "DD/MM/YYYY",
     },
 
+    timeFormat: {
+      type: String,
+      enum: ["12h", "24h"],
+      default: "24h",
+    },
+
     weekStart: {
       type: String,
       enum: ["mon", "sun"],
