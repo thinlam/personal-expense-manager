@@ -10,12 +10,28 @@ import reportRouter from "./modules/reports/report.routes";
 import walletRouter from "./modules/wallets/wallet.routes";
 import userRouter from "./modules/users/user.routes";
 
+const allowedOrigins = (
+  process.env.CORS_ORIGINS ??
+  "http://localhost:5173,https://personal-expense-manager-two.vercel.app"
+)
+  .split(",")
+  .map((item) => item.trim())
+  .filter(Boolean);
+
 export function createApp() {
   const app = express();
 
   app.use(
     cors({
-      origin: true,
+      origin(origin, callback) {
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
+        return callback(new Error(`CORS blocked for origin: ${origin}`));
+      },
       credentials: true,
     })
   );
@@ -40,7 +56,10 @@ export function createApp() {
 
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     console.error("❌ ERROR:", err);
-    res.status(500).json({ message: "Internal server error" });
+
+    res.status(500).json({
+      message: err instanceof Error ? err.message : "Internal server error",
+    });
   });
 
   return app;
