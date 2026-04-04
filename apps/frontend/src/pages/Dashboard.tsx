@@ -74,6 +74,7 @@ export default function Dashboard() {
         const dto = await dashboardService.getOverview(range);
         if (!alive) return;
         setData(dto);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (e: any) {
         if (!alive) return;
         setErr(e?.message || "Không tải được Dashboard. Thử lại nhé.");
@@ -140,7 +141,7 @@ export default function Dashboard() {
           <Link className="side__item" to="/wallets">
             <span className="side__ic">💳</span>
             <span>Ví</span>
-            </Link>
+          </Link>
 
 
           <div className="side__sep" />
@@ -581,6 +582,7 @@ function DonutBreakdown({ slices }: { slices: CategorySlice[] }) {
     .slice(0, 6)
     .map((s, idx) => {
       const start = (acc / total) * 360;
+      // eslint-disable-next-line react-hooks/immutability
       acc += s.amount;
       const end = (acc / total) * 360;
       return `var(--c${idx + 1}) ${start.toFixed(1)}deg ${end.toFixed(1)}deg`;

@@ -1,8 +1,20 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { isAxiosError } from "axios";
 import { authService } from "../../services/auth.service";
-import { storage } from "../../utils/storage";
 import "./register.css";
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (isAxiosError<{ message?: string }>(error)) {
+    return error.response?.data?.message ?? error.message ?? fallback;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return fallback;
+}
 
 export default function Register() {
   const nav = useNavigate();
@@ -10,36 +22,50 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const [agree, setAgree] = useState(true);
   const [showPwd, setShowPwd] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const pwdMismatch = useMemo(() => {
+    if (!confirmPassword) return false;
+    return password !== confirmPassword;
+  }, [password, confirmPassword]);
+
   const canSubmit = useMemo(() => {
     if (name.trim().length < 2) return false;
     if (!email.trim()) return false;
-    if (password.length < 8) return false; // giống ảnh: tối thiểu 8 ký tự
+    if (password.length < 8) return false;
+    if (confirmPassword.length < 8) return false;
+    if (password !== confirmPassword) return false;
     if (!agree) return false;
     return true;
-  }, [name, email, password, agree]);
+  }, [name, email, password, confirmPassword, agree]);
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!canSubmit) return;
 
     setError(null);
     setLoading(true);
-    try {
-      const data = await authService.register({ name, email, password });
-      storage.setToken(data.token);
-      storage.setUser(data.user);
 
-      nav("/login", { replace: true });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      setError(err?.response?.data?.message ?? "Đăng ký thất bại");
+    try {
+      await authService.registerInit({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      nav("/verify-email-otp", {
+        replace: true,
+        state: { email: email.trim().toLowerCase() },
+      });
+    } catch (error: unknown) {
+      setError(getErrorMessage(error, "Đăng ký thất bại"));
     } finally {
       setLoading(false);
     }
@@ -47,7 +73,6 @@ export default function Register() {
 
   return (
     <div className="regPage2">
-      {/* Topbar */}
       <header className="regTopbar2">
         <div className="brand2">
           <div className="brandLogo2" aria-hidden>
@@ -64,7 +89,6 @@ export default function Register() {
         </div>
       </header>
 
-      {/* Center */}
       <main className="regCenter2">
         <section className="regCard2">
           <div className="cardHeader2">
@@ -138,6 +162,39 @@ export default function Register() {
               </div>
             </div>
 
+            <div className="field2">
+              <div className="label2">NHẬP LẠI MẬT KHẨU</div>
+              <div className="inputWrap2">
+                <span className="leftIcon2" aria-hidden>
+                  <KeyIcon />
+                </span>
+                <input
+                  className="input2"
+                  placeholder="nhập lại mật khẩu"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  type={showConfirm ? "text" : "password"}
+                  required
+                  minLength={8}
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  className="iconBtn2"
+                  onClick={() => setShowConfirm((v) => !v)}
+                  aria-label={showConfirm ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                >
+                  {showConfirm ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+
+              {pwdMismatch && (
+                <div className="errorBox2" style={{ marginTop: 10 }}>
+                  Mật khẩu nhập lại không khớp.
+                </div>
+              )}
+            </div>
+
             <label className="agreeRow2">
               <input
                 type="checkbox"
@@ -163,7 +220,7 @@ export default function Register() {
               {loading ? (
                 <span className="btnLoading2">
                   <span className="spinner2" aria-hidden />
-                  Đang tạo tài khoản...
+                  Đang gửi OTP...
                 </span>
               ) : (
                 <span className="btnRow2">
@@ -178,7 +235,11 @@ export default function Register() {
               <div className="line2" />
             </div>
 
-            <button type="button" className="googleBtn2" onClick={() => alert("TODO: Google OAuth")}>
+            <button
+              type="button"
+              className="googleBtn2"
+              onClick={() => alert("TODO: Google OAuth")}
+            >
               <GoogleIcon />
               <span>Sign in with Google</span>
             </button>
@@ -195,7 +256,6 @@ export default function Register() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="regFooter2">
         <div>© 2026 SecureFin Intelligence. Bảo mật tuyệt đối.</div>
         <div className="footerLinks2">
@@ -230,17 +290,8 @@ function LockIcon() {
 function UserIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M12 12a4.2 4.2 0 1 0-4.2-4.2A4.2 4.2 0 0 0 12 12Z"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path
-        d="M4.5 20a7.5 7.5 0 0 1 15 0"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+      <path d="M12 12a4.2 4.2 0 1 0-4.2-4.2A4.2 4.2 0 0 0 12 12Z" stroke="currentColor" strokeWidth="2" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -252,7 +303,13 @@ function MailIcon() {
         stroke="currentColor"
         strokeWidth="2"
       />
-      <path d="M5.5 7l6.5 5 6.5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M5.5 7l6.5 5 6.5-5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
