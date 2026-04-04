@@ -1,15 +1,21 @@
 import axios from "axios";
 import { storage } from "../utils/storage";
 
+const API_URL = import.meta.env.VITE_API_URL?.trim();
+
+if (!API_URL) {
+  console.error("Missing VITE_API_URL");
+}
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, // vd: http://localhost:4000/api
+  baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
   timeout: 15000,
 });
 
 api.interceptors.request.use((config) => {
-  // ✅ (Option) Không gắn token cho login/register
   const url = config.url || "";
+
   const skipAuth =
     url.includes("/auth/login") ||
     url.includes("/auth/register") ||
@@ -20,7 +26,7 @@ api.interceptors.request.use((config) => {
     const token = storage.getToken?.();
     if (token) {
       config.headers = config.headers ?? {};
-      (config.headers as any).Authorization = `Bearer ${token}`;
+      (config.headers as Record<string, string>).Authorization = `Bearer ${token}`;
     }
   }
 
