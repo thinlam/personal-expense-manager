@@ -1,0 +1,584 @@
+.savingsPage {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(23, 44, 98, 0.45), transparent 34%),
+    radial-gradient(circle at bottom left, rgba(34, 83, 210, 0.2), transparent 30%),
+    #030712;
+  color: #ecf3ff;
+  display: grid;
+  grid-template-columns: 252px 1fr;
+}
+
+.savingsSidebar {
+  border-right: 1px solid rgba(115, 145, 228, 0.16);
+  background: linear-gradient(180deg, rgba(8, 16, 36, 0.92), rgba(4, 10, 24, 0.9));
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.savingsBrand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px 18px;
+}
+
+.savingsBrand__logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: #041d10;
+  background: linear-gradient(135deg, #1ed99c, #16b37d);
+}
+
+.savingsBrand__name {
+  font-weight: 700;
+  color: #eff5ff;
+  font-size: 20px;
+}
+
+.savingsBrand__sub {
+  font-size: 13px;
+  color: #8ca4d3;
+  margin-top: 2px;
+}
+
+.savingsNav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.savingsNav__item {
+  text-decoration: none;
+  color: #d6e5f4;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  padding: 11px 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 18px;
+  letter-spacing: 0.2px;
+  transition: 0.24s ease;
+}
+
+.savingsNav__ic {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(122, 151, 213, 0.22);
+  background: rgba(255, 255, 255, 0.03);
+  color: #b9cde7;
+  font-size: 14px;
+}
+
+.savingsNav__item:hover {
+  color: #ffffff;
+  border-color: rgba(66, 232, 222, 0.24);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.savingsNav__item.is-active {
+  color: #ffffff;
+  border-color: rgba(42, 221, 200, 0.45);
+  background: linear-gradient(180deg, rgba(13, 100, 114, 0.36), rgba(9, 57, 74, 0.32));
+}
+
+.savingsNav__item.is-active .savingsNav__ic {
+  border-color: rgba(46, 220, 205, 0.45);
+  color: #dffbff;
+}
+
+.savingsNav__sep {
+  margin: 8px 6px;
+  border-top: 1px solid rgba(126, 149, 201, 0.18);
+}
+
+.savingsMain {
+  padding: 22px 26px 28px;
+}
+
+.savingsHero {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.savingsHero__eyebrow {
+  margin: 0;
+  color: #88a0ce;
+  font-size: 12px;
+}
+
+.savingsHero h1 {
+  margin: 6px 0;
+  font-size: 44px;
+  line-height: 1.08;
+}
+
+.savingsHero__desc {
+  margin: 0;
+  color: #94a7cd;
+}
+
+.savingsHero__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.savingsIconBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(125, 154, 225, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  color: #dbe7ff;
+  cursor: pointer;
+}
+
+.savingsUserChip {
+  border: 1px solid rgba(126, 154, 219, 0.2);
+  border-radius: 16px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.savingsUserChip__ava {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(64, 109, 240, 0.25);
+  overflow: hidden;
+}
+
+.savingsUserChip__ava img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.savingsUserChip b {
+  font-size: 12px;
+}
+
+.savingsUserChip p {
+  margin: 2px 0 0;
+  color: #66d0ff;
+  font-size: 11px;
+}
+
+.savingsError {
+  margin-bottom: 14px;
+  border: 1px solid rgba(255, 112, 112, 0.38);
+  background: rgba(255, 90, 90, 0.12);
+  color: #ffcaca;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.savingsTopGrid {
+  display: grid;
+  grid-template-columns: 1.1fr 2fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.savingsCard {
+  border-radius: 22px;
+  border: 1px solid rgba(118, 149, 221, 0.18);
+  background:
+    radial-gradient(circle at top, rgba(74, 116, 242, 0.14), transparent 42%),
+    rgba(255, 255, 255, 0.03);
+  padding: 18px;
+}
+
+.savingsCard--money > span {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #58d2ff;
+}
+
+.savingsCard--money h3 {
+  margin: 10px 0 4px;
+  font-size: 46px;
+  line-height: 1;
+}
+
+.savingsCard--money p {
+  margin: 0;
+  color: #9db3dc;
+  font-size: 13px;
+}
+
+.savingsCard--money p.is-positive {
+  color: #35dd96;
+}
+
+.savingsCard--money p.is-neutral {
+  color: #a4b5d3;
+}
+
+.savingsMiniMetric {
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #8ea5d1;
+}
+
+.savingsMiniMetric b {
+  color: #f2f7ff;
+}
+
+.savingsMiniBar {
+  margin-top: 8px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.savingsMiniBar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2c7bff, #35dbff);
+}
+
+.savingsCard--trend h3 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.savingsCard--trend p {
+  margin: 4px 0 12px;
+  color: #8fa4cd;
+}
+
+.savingsRange {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(131, 155, 221, 0.16);
+  border-radius: 999px;
+  padding: 4px;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.savingsRange button {
+  border: 0;
+  color: #a8bbdf;
+  background: transparent;
+  height: 30px;
+  border-radius: 999px;
+  padding: 0 12px;
+  cursor: pointer;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+}
+
+.savingsRange button.is-active {
+  color: #ffffff;
+  background: linear-gradient(180deg, #3864ff, #2a4cd8);
+}
+
+.savingsChartBox {
+  height: 190px;
+  margin-top: 8px;
+}
+
+.savingsChartBox svg {
+  width: 100%;
+  height: 100%;
+}
+
+.savingsChartBox path {
+  fill: none;
+  stroke: #2f66ff;
+  stroke-width: 3;
+}
+
+.savingsActions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.savingsActions button {
+  min-height: 48px;
+  border-radius: 999px;
+  border: 1px solid rgba(124, 154, 219, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  color: #d6e3fd;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.savingsGrid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.savingsPanel {
+  border-radius: 22px;
+  border: 1px solid rgba(118, 149, 221, 0.18);
+  background:
+    radial-gradient(circle at right top, rgba(74, 116, 242, 0.12), transparent 42%),
+    rgba(255, 255, 255, 0.03);
+  padding: 16px;
+}
+
+.savingsPanel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.savingsPanel__head h3 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.savingsPanel__head span {
+  color: #2fd7ff;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+}
+
+.savingsBudgetList,
+.savingsTxList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.savingsPanel--tx .savingsTxList {
+  grid-template-columns: 1fr;
+}
+
+.savingsBudgetItem {
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(126, 156, 220, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.savingsBudgetItem__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.savingsBudgetItem strong {
+  font-size: 28px;
+}
+
+.savingsBudgetItem__top span {
+  color: #7ee4ff;
+  font-size: 12px;
+}
+
+.savingsBudgetItem p {
+  margin: 8px 0 0;
+  color: #92a7d0;
+  font-size: 13px;
+}
+
+.savingsBudgetBar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.savingsBudgetBar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2ca4ff, #53ffad);
+}
+
+.savingsTxItem {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(126, 156, 220, 0.15);
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.savingsTxItem strong {
+  display: block;
+}
+
+.savingsTxItem p {
+  margin: 4px 0 0;
+  color: #95a8d0;
+  font-size: 13px;
+}
+
+.savingsTxItem b {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.savingsTxItem b.is-income {
+  color: #40dfa8;
+}
+
+.savingsTxItem b.is-expense {
+  color: #ff9ca4;
+}
+
+.savingsAIBanner {
+  border-radius: 18px;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(#081326, #081326) padding-box,
+    linear-gradient(90deg, #2c6eff, #2de2ff, #ffe24a) border-box;
+  padding: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+}
+
+.savingsAIBanner h3 {
+  margin: 0;
+  font-size: 36px;
+}
+
+.savingsAIBanner p {
+  margin: 8px 0 0;
+  color: #97aad1;
+}
+
+.savingsAIBanner button {
+  border: 0;
+  border-radius: 999px;
+  min-height: 46px;
+  padding: 0 28px;
+  background: linear-gradient(135deg, #ffe55d, #ffc400);
+  color: #0d1324;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.savingsMuted {
+  color: #9ab0d8;
+  font-size: 13px;
+  padding: 8px 2px;
+}
+
+@media (max-width: 1260px) {
+  .savingsCard--money h3 {
+    font-size: 38px;
+  }
+
+  .savingsPanel__head h3,
+  .savingsAIBanner h3,
+  .savingsCard--trend h3 {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .savingsPage {
+    grid-template-columns: 1fr;
+  }
+
+  .savingsSidebar {
+    border-right: 0;
+    border-bottom: 1px solid rgba(127, 151, 218, 0.15);
+  }
+
+  .savingsNav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .savingsTopGrid,
+  .savingsGrid,
+  .savingsActions {
+    grid-template-columns: 1fr;
+  }
+
+  .savingsBudgetList {
+    grid-template-columns: 1fr;
+  }
+
+  .savingsAIBanner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 680px) {
+  .savingsMain {
+    padding: 18px;
+  }
+
+  .savingsHero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .savingsHero h1 {
+    font-size: 34px;
+  }
+
+  .savingsNav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .savingsNav__item {
+    font-size: 14px;
+  }
+
+  .savingsRange {
+    width: 100%;
+  }
+
+  .savingsRange button {
+    flex: 1;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+
+  .savingsCard--money h3 {
+    font-size: 30px;
+  }
+
+  .savingsPanel__head h3,
+  .savingsAIBanner h3,
+  .savingsCard--trend h3 {
+    font-size: 24px;
+  }
+}

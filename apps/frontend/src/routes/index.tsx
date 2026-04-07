@@ -12,6 +12,8 @@ import TransactionsList from "../pages/Transactions/TransactionsList";
 import TransactionNew from "../pages/Transactions/TransactionNew";
 import Budgets from "../pages/Budgets/Budgets";
 import Reports from "../pages/Reports/Reports";
+import Savings from "../pages/Savings/Savings";
+import SavingsNewGoal from "../pages/Savings/SavingsNewGoal";
 import Wallets from "../pages/Wallets/Wallets";
 import Settings from "../pages/Settings";
 
@@ -33,6 +35,8 @@ export default function AppRoutes() {
       <Route path="/transactions/new" element={<TransactionNew />} />
       <Route path="/wallets" element={<Wallets />} />
       <Route path="/budgets" element={<Budgets />} />
+      <Route path="/savings" element={<Savings />} />
+      <Route path="/savings/new" element={<SavingsNewGoal />} />
       <Route path="/reports" element={<Reports />} />
       <Route path="/settings" element={<Settings />} />
 
