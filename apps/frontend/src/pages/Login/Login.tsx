@@ -23,7 +23,11 @@ export default function Login() {
     setError(null);
     setLoading(true);
     try {
-      const data = await authService.login({ email, password });
+      const data = await authService.login({
+        email,
+        password,
+        device: buildLoginDevicePayload(),
+      });
 
       storage.setToken(data.token);
       storage.setUser(data.user);
@@ -188,6 +192,39 @@ export default function Login() {
       </footer>
     </div>
   );
+}
+
+function buildLoginDevicePayload() {
+  const ua = navigator.userAgent || "";
+  const browser = ua.includes("Edg")
+    ? "Edge"
+    : ua.includes("Chrome")
+      ? "Chrome"
+      : ua.includes("Firefox")
+        ? "Firefox"
+        : ua.includes("Safari")
+          ? "Safari"
+          : "Browser";
+
+  const platform =
+    (navigator as any).userAgentData?.platform ||
+    navigator.platform ||
+    "Unknown Platform";
+  const deviceName = `${browser} on ${platform}`;
+  const deviceIdKey = "device_id";
+
+  let deviceId = localStorage.getItem(deviceIdKey);
+  if (!deviceId) {
+    deviceId = crypto.randomUUID();
+    localStorage.setItem(deviceIdKey, deviceId);
+  }
+
+  return {
+    deviceId,
+    deviceName,
+    platform,
+    browser,
+  };
 }
 
 /* ===== SVG Icons (no deps) ===== */

@@ -258,6 +258,14 @@ body{
   background: linear-gradient(135deg, rgba(25,211,154,.95), rgba(16,185,129,.85));
   color:#062016;
   font-weight: 900;
+  overflow: hidden;
+}
+
+.user__avaImg{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 /* ================== ALERT ================== */

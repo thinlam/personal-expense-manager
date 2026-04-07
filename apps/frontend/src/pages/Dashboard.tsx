@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import "./dashboard.css";
 import { dashboardService } from "../services/dashboard.service";
+import { getCurrentUser, type CurrentUser, type DateFormat } from "../services/user.service";
 import type {
   DashboardDTO,
   CashflowPoint,
@@ -9,7 +10,7 @@ import type {
   BudgetCard,
   TxRow,
 } from "../types/dashboard";
-import { formatMoney } from "../utils/formatMoney";
+import { formatDateBySetting, formatMoneyByCurrency } from "../utils/formatters";
 
 type RangeKey = "THIS_MONTH" | "LAST_MONTH" | "THIS_YEAR";
 
@@ -20,7 +21,14 @@ const RANGE_LABEL: Record<RangeKey, string> = {
 };
 
 /* ================== USER (from localStorage) ================== */
-type Me = { id?: string; name?: string; email?: string; isPremium?: boolean };
+type Me = {
+  id?: string;
+  name?: string;
+  email?: string;
+  isPremium?: boolean;
+  avatar?: string;
+};
+type TimeFormat = "24h" | "12h";
 
 function getMeFromStorage(): Me | null {
   const raw = localStorage.getItem("user");
@@ -48,6 +56,10 @@ export default function Dashboard() {
   const [data, setData] = useState<DashboardDTO | null>(null);
 
   const [search, setSearch] = useState("");
+  const [currency, setCurrency] = useState<"VND" | "USD" | "EUR">("VND");
+  const [dateFormat, setDateFormat] = useState<DateFormat>("DD/MM/YYYY");
+  const [timeFormat, setTimeFormat] = useState<TimeFormat>("24h");
+  const [profile, setProfile] = useState<CurrentUser | null>(null);
 
   // ✅ Lấy user đã login từ localStorage
   const [me, setMe] = useState<Me | null>(() => getMeFromStorage());
@@ -87,6 +99,35 @@ export default function Dashboard() {
     };
   }, [range, reloadKey]);
 
+  useEffect(() => {
+    let alive = true;
+
+    (async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        if (!alive) return;
+        setProfile(currentUser);
+        setCurrency(currentUser.currency || "VND");
+        setDateFormat(currentUser.dateFormat || "DD/MM/YYYY");
+        setTimeFormat(currentUser.timeFormat || "24h");
+        setMe((prev) => ({
+          ...prev,
+          id: currentUser._id,
+          name: currentUser.name,
+          email: currentUser.email,
+          isPremium: currentUser.isPremium,
+          avatar: currentUser.avatar,
+        }));
+      } catch {
+        if (!alive) return;
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const greeting = useMemo(() => {
     const h = new Date().getHours();
     if (h < 11) return "Chào buổi sáng";
@@ -101,9 +142,10 @@ export default function Dashboard() {
   const budgets = data?.budgets ?? [];
   const recent = data?.recentTransactions ?? [];
 
-  const displayName = me?.name?.trim() || "Người dùng";
-  const badge = me?.isPremium ? "PREMIUM USER" : "FREE USER";
+  const displayName = profile?.name?.trim() || me?.name?.trim() || "Người dùng";
+  const badge = (profile?.isPremium ?? me?.isPremium) ? "PREMIUM USER" : "FREE USER";
   const ava = initialsFromName(displayName);
+  const avatarSrc = profile?.avatar || me?.avatar || "";
 
   return (
     <div className="dash">
@@ -206,7 +248,13 @@ export default function Dashboard() {
                 <div className="user__name">{displayName}</div>
                 <div className="user__badge">{badge}</div>
               </div>
-              <div className="user__ava">{ava}</div>
+              <div className="user__ava">
+                {avatarSrc ? (
+                  <img src={avatarSrc} alt={displayName} className="user__avaImg" />
+                ) : (
+                  ava
+                )}
+              </div>
             </div>
           </div>
         </header>
@@ -232,7 +280,7 @@ export default function Dashboard() {
             loading={loading}
             icon="🏛"
             title="Tổng số dư"
-            value={summary ? formatMoney(summary.balance) : "—"}
+            value={summary ? formatMoneyByCurrency(summary.balance, currency) : "—"}
             chip="+ 2.4% tháng này"
             tone="neutral"
           />
@@ -240,7 +288,7 @@ export default function Dashboard() {
             loading={loading}
             icon="🔒"
             title="Chi tiêu tháng này"
-            value={summary ? formatMoney(summary.expense) : "—"}
+            value={summary ? formatMoneyByCurrency(summary.expense, currency) : "—"}
             chip="- 1.2% so với tháng trước"
             tone="bad"
           />
@@ -250,7 +298,7 @@ export default function Dashboard() {
             title="Tiết kiệm tích lũy"
             value={
               summary
-                ? formatMoney(Math.max(0, summary.income - summary.expense))
+                ? formatMoneyByCurrency(Math.max(0, summary.income - summary.expense), currency)
                 : "—"
             }
             chip="+ 5.0% tháng này"
@@ -311,7 +359,7 @@ export default function Dashboard() {
             {loading ? (
               <SkeletonDonut />
             ) : (
-              <DonutBreakdown slices={categories} />
+              <DonutBreakdown slices={categories} currency={currency} />
             )}
           </div>
 
@@ -341,7 +389,7 @@ export default function Dashboard() {
                 to="/transactions?create=expense"
               />
             ) : (
-              <TxTable rows={recent} />
+              <TxTable rows={recent} currency={currency} dateFormat={dateFormat} timeFormat={timeFormat} />
             )}
           </div>
 
@@ -367,7 +415,7 @@ export default function Dashboard() {
                 to="/budgets"
               />
             ) : (
-              <BudgetList items={budgets} />
+              <BudgetList items={budgets} currency={currency} />
             )}
           </div>
         </section>
@@ -440,7 +488,17 @@ function Empty({
   );
 }
 
-function TxTable({ rows }: { rows: TxRow[] }) {
+function TxTable({
+  rows,
+  currency,
+  dateFormat,
+  timeFormat,
+}: {
+  rows: TxRow[];
+  currency: "VND" | "USD" | "EUR";
+  dateFormat: DateFormat;
+  timeFormat: TimeFormat;
+}) {
   return (
     <div className="tx">
       <div className="tx__head">
@@ -459,13 +517,13 @@ function TxTable({ rows }: { rows: TxRow[] }) {
             </div>
           </div>
 
-          <div className="tx__muted">{new Date(t.date).toLocaleString()}</div>
+          <div className="tx__muted">{formatDateTimeBySetting(t.date, dateFormat, timeFormat)}</div>
 
           <div className="tx__muted">{t.wallet}</div>
 
           <div className={`tx__amt ${t.type === "EXPENSE" ? "is-bad" : "is-good"}`}>
             {t.type === "EXPENSE" ? "-" : "+"}
-            {formatMoney(t.amount)}
+            {formatMoneyByCurrency(t.amount, currency)}
           </div>
         </div>
       ))}
@@ -473,7 +531,13 @@ function TxTable({ rows }: { rows: TxRow[] }) {
   );
 }
 
-function BudgetList({ items }: { items: BudgetCard[] }) {
+function BudgetList({
+  items,
+  currency,
+}: {
+  items: BudgetCard[];
+  currency: "VND" | "USD" | "EUR";
+}) {
   return (
     <div className="budgets">
       {items.map((b) => {
@@ -487,7 +551,7 @@ function BudgetList({ items }: { items: BudgetCard[] }) {
               <div className="budget__meta">
                 <span className={`pill pill--${level}`}>{pct.toFixed(0)}%</span>
                 <span className="muted">
-                  {formatMoney(b.used)} / {formatMoney(b.limit)}
+                  {formatMoneyByCurrency(b.used, currency)} / {formatMoneyByCurrency(b.limit, currency)}
                 </span>
               </div>
             </div>
@@ -498,7 +562,7 @@ function BudgetList({ items }: { items: BudgetCard[] }) {
               />
             </div>
             <div className="budget__foot muted">
-              Còn lại: <b>{formatMoney(Math.max(0, b.limit - b.used))}</b>
+              Còn lại: <b>{formatMoneyByCurrency(Math.max(0, b.limit - b.used), currency)}</b>
             </div>
           </div>
         );
@@ -574,7 +638,13 @@ function CashflowChart({ points }: { points: CashflowPoint[] }) {
   );
 }
 
-function DonutBreakdown({ slices }: { slices: CategorySlice[] }) {
+function DonutBreakdown({
+  slices,
+  currency,
+}: {
+  slices: CategorySlice[];
+  currency: "VND" | "USD" | "EUR";
+}) {
   const total = slices.reduce((s, x) => s + x.amount, 0) || 1;
 
   let acc = 0;
@@ -608,7 +678,7 @@ function DonutBreakdown({ slices }: { slices: CategorySlice[] }) {
               <span className={`sw sw--${idx + 1}`} />
               <div className="donut__name">{s.name}</div>
               <div className="donut__meta">
-                <b>{pct.toFixed(0)}%</b> · {formatMoney(s.amount)}
+                <b>{pct.toFixed(0)}%</b> · {formatMoneyByCurrency(s.amount, currency)}
               </div>
             </div>
           );
@@ -617,6 +687,25 @@ function DonutBreakdown({ slices }: { slices: CategorySlice[] }) {
       </div>
     </div>
   );
+}
+
+function formatDateTimeBySetting(
+  input: string,
+  dateFormat: DateFormat,
+  timeFormat: TimeFormat
+) {
+  const d = new Date(input);
+  const datePart = formatDateBySetting(d, dateFormat);
+  const hour = d.getHours();
+  const minute = String(d.getMinutes()).padStart(2, "0");
+
+  if (timeFormat === "24h") {
+    return `${datePart} ${String(hour).padStart(2, "0")}:${minute}`;
+  }
+
+  const suffix = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour % 12 || 12;
+  return `${datePart} ${String(hour12).padStart(2, "0")}:${minute} ${suffix}`;
 }
 
 /* ================== Skeletons ================== */

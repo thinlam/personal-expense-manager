@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../../config/env";
+import { UserModel } from "../users/user.model";
 
 export interface AuthRequest extends Request {
   userId?: string;
@@ -10,7 +11,7 @@ export interface AuthRequest extends Request {
   };
 }
 
-export function requireAuth(
+export async function requireAuth(
   req: AuthRequest,
   res: Response,
   next: NextFunction
@@ -28,12 +29,24 @@ export function requireAuth(
       id?: string;
       _id?: string;
       email?: string;
+      authVersion?: number;
     };
 
     const resolvedUserId = payload.userId || payload.id || payload._id;
 
     if (!resolvedUserId) {
       return res.status(401).json({ message: "Invalid token payload" });
+    }
+
+    const user = await UserModel.findById(resolvedUserId).select("authVersion");
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const tokenVersion = Number(payload.authVersion || 0);
+    const currentVersion = Number((user as any).authVersion || 0);
+    if (tokenVersion !== currentVersion) {
+      return res.status(401).json({ message: "Phiên đăng nhập đã hết hiệu lực" });
     }
 
     req.userId = resolvedUserId;

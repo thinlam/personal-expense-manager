@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import type { DateFormat } from "../../services/user.service";
 import { dict } from "../../utils/i18n";
 
@@ -11,6 +12,7 @@ type Props = {
   currency: "VND" | "USD" | "EUR";
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
+  avatar: string;
   avatarText: string;
   saving: boolean;
   onNameChange: (value: string) => void;
@@ -19,6 +21,8 @@ type Props = {
   onCurrencyChange: (value: "VND" | "USD" | "EUR") => void;
   onDateFormatChange: (value: DateFormat) => void;
   onTimeFormatChange: (value: TimeFormat) => void;
+  onAvatarSelect: (file: File | null) => void;
+  onRemoveAvatar: () => void;
   onSave: () => void;
 };
 
@@ -30,6 +34,7 @@ export default function ProfileSection({
   currency,
   dateFormat,
   timeFormat,
+  avatar,
   avatarText,
   saving,
   onNameChange,
@@ -38,9 +43,12 @@ export default function ProfileSection({
   onCurrencyChange,
   onDateFormatChange,
   onTimeFormatChange,
+  onAvatarSelect,
+  onRemoveAvatar,
   onSave,
 }: Props) {
   const t = dict[language];
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
 
   const previewText = formatDateTimePreview(dateFormat, timeFormat);
 
@@ -60,7 +68,11 @@ export default function ProfileSection({
         <div className="profileTop">
           <div className="avatarWrap">
             <div className="avatarRing">
-              <div className="avatarImage">{avatarText}</div>
+              {avatar ? (
+                <img src={avatar} alt={t.avatar} className="avatarPhoto" />
+              ) : (
+                <div className="avatarImage">{avatarText}</div>
+              )}
             </div>
             <button className="avatarEdit" type="button">
               ✎
@@ -72,10 +84,21 @@ export default function ProfileSection({
             <p>{t.avatarHelp}</p>
 
             <div className="avatarActions">
-              <button className="btnPrimary" type="button">
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/jpg,image/gif"
+                className="avatarFileInput"
+                onChange={(e) => onAvatarSelect(e.target.files?.[0] || null)}
+              />
+              <button
+                className="btnPrimary"
+                type="button"
+                onClick={() => avatarInputRef.current?.click()}
+              >
                 {t.uploadNew}
               </button>
-              <button className="btnGhost" type="button">
+              <button className="btnGhost" type="button" onClick={onRemoveAvatar}>
                 {t.removeImage}
               </button>
             </div>
