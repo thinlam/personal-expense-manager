@@ -1,5 +1,7 @@
 import { api } from "./api";
 
+export type Language = "vi" | "en";
+export type Currency = "VND" | "USD" | "EUR";
 export type DateFormat = "DD/MM/YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD";
 export type NotificationChannel = "all" | "important" | "mute";
 
@@ -59,11 +61,17 @@ export type UpdateCurrentUserPayload = {
   weekStart?: "mon" | "sun";
   notifications?: NotificationSettings;
   security?: SecuritySettings;
-}) {
-  const res = await api.patch<{
-    message: string;
-    user: CurrentUser;
-  }>("/users/me", payload);
+};
+
+export type UpdateCurrentUserResponse = {
+  message: string;
+  user: CurrentUser;
+};
+
+export async function getCurrentUser(): Promise<CurrentUser> {
+  const res = await api.get<CurrentUser>("/users/me");
+  return res.data;
+}
 
 export async function updateCurrentUser(
   payload: UpdateCurrentUserPayload
