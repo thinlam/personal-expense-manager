@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { type SignOptions } from "jsonwebtoken";
 import { env } from "../../config/env";
 import { UserModel } from "../users/user.model";
 import { EmailOtpModel } from "./emailOtp.model";
@@ -225,21 +225,19 @@ export const AuthService = {
     const email = input.email.toLowerCase().trim();
     const user = await UserModel.findOne({ email });
 
+    // chống dò email: luôn trả ok=true
+    const genericMsg =
+      "Nếu email tồn tại trong hệ thống, mã OTP đã được gửi để khôi phục mật khẩu.";
+
     if (!user) {
-      return {
-        ok: true as const,
-        message: "Nếu email tồn tại trong hệ thống, mã OTP đã được gửi để khôi phục mật khẩu.",
-      };
+      return { ok: true as const, message: genericMsg };
     }
 
     const now = Date.now();
     const lastSentAt = user.resetPasswordOtpLastSentAt?.getTime?.() ?? 0;
 
     if (now - lastSentAt < OTP_RESEND_COOLDOWN_MS) {
-      return {
-        ok: true as const,
-        message: "Nếu email tồn tại trong hệ thống, mã OTP đã được gửi để khôi phục mật khẩu.",
-      };
+      return { ok: true as const, message: genericMsg };
     }
 
     const otp = generateOtp6();
@@ -251,10 +249,7 @@ export const AuthService = {
     await user.save();
     await sendForgotPasswordOtpEmail(email, otp);
 
-    return {
-      ok: true as const,
-      message: "Nếu email tồn tại trong hệ thống, mã OTP đã được gửi để khôi phục mật khẩu.",
-    };
+    return { ok: true as const, message: genericMsg };
   },
 
   // ====== ĐẶT LẠI MẬT KHẨU ======

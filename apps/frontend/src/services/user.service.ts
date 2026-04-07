@@ -39,8 +39,8 @@ export type CurrentUser = {
   avatar?: string;
   plan?: string;
   isPremium?: boolean;
-  language?: "vi" | "en";
-  currency?: "VND" | "USD" | "EUR";
+  language?: Language;
+  currency?: Currency;
   dateFormat?: DateFormat;
   timeFormat?: "24h" | "12h";
   weekStart?: "mon" | "sun";
@@ -49,16 +49,11 @@ export type CurrentUser = {
   securityDevices?: SecurityDevice[];
 };
 
-export async function getCurrentUser() {
-  const res = await api.get<CurrentUser>("/users/me");
-  return res.data;
-}
-
-export async function updateCurrentUser(payload: {
+export type UpdateCurrentUserPayload = {
   name?: string;
   avatar?: string;
-  language?: "vi" | "en";
-  currency?: "VND" | "USD" | "EUR";
+  language?: Language;
+  currency?: Currency;
   dateFormat?: DateFormat;
   timeFormat?: "24h" | "12h";
   weekStart?: "mon" | "sun";
@@ -70,6 +65,10 @@ export async function updateCurrentUser(payload: {
     user: CurrentUser;
   }>("/users/me", payload);
 
+export async function updateCurrentUser(
+  payload: UpdateCurrentUserPayload
+): Promise<UpdateCurrentUserResponse> {
+  const res = await api.patch<UpdateCurrentUserResponse>("/users/me", payload);
   return res.data;
 }
 

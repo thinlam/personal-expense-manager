@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { isAxiosError } from "axios";
 import { authService } from "../../services/auth.service";
 import "./verifyOtp.css";
 
@@ -9,13 +10,25 @@ function onlyDigits(s: string) {
   return s.replace(/\D/g, "");
 }
 
+function getErrorMessage(error: unknown, fallback: string) {
+  if (isAxiosError<{ message?: string }>(error)) {
+    return error.response?.data?.message ?? error.message ?? fallback;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return fallback;
+}
+
 export default function VerifyOtp() {
   const nav = useNavigate();
   const location = useLocation();
   const state = (location.state as LocationState) || {};
-  const email = state.email?.trim()?.toLowerCase() || "";
+  const email = state.email?.trim().toLowerCase() || "";
 
-  const OTP_TTL = 120; // ✅ đổi 60/180 tuỳ backend
+  const OTP_TTL = 120;
   const [secondsLeft, setSecondsLeft] = useState<number>(OTP_TTL);
   const [expired, setExpired] = useState(false);
 
@@ -27,11 +40,9 @@ export default function VerifyOtp() {
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
   useEffect(() => {
-    // Nếu vào thẳng URL không có email -> quay lại forgot
     if (!email) nav("/forgot-password", { replace: true });
   }, [email, nav]);
 
-  // ✅ Timer OTP (chạy luôn vì trang này chỉ OTP)
   useEffect(() => {
     setExpired(false);
 
@@ -51,7 +62,9 @@ export default function VerifyOtp() {
 
   const otp = useMemo(() => otpArr.join(""), [otpArr]);
 
-  const canSubmitOtp = useMemo(() => otp.length === 6 && !loading && !expired, [otp, loading, expired]);
+  const canSubmitOtp = useMemo(() => {
+    return otp.length === 6 && !loading && !expired;
+  }, [otp, loading, expired]);
 
   const timeText = useMemo(() => {
     const m = Math.floor(secondsLeft / 60);
@@ -69,6 +82,7 @@ export default function VerifyOtp() {
     setMsg(null);
 
     const v = onlyDigits(value).slice(0, 1);
+
     setOtpArr((prev) => {
       const next = [...prev];
       next[i] = v;
@@ -88,20 +102,23 @@ export default function VerifyOtp() {
         });
         return;
       }
+
       if (i > 0) focusIndex(i - 1);
     }
+
     if (e.key === "ArrowLeft" && i > 0) focusIndex(i - 1);
     if (e.key === "ArrowRight" && i < 5) focusIndex(i + 1);
   }
 
-  function onPaste(e: React.ClipboardEvent) {
+  function onPaste(e: React.ClipboardEvent<HTMLDivElement>) {
     const text = onlyDigits(e.clipboardData.getData("text")).slice(0, 6);
     if (!text) return;
 
     e.preventDefault();
-    const filled = text.split("").concat(Array(6).fill("")).slice(0, 6);
 
+    const filled = text.split("").concat(Array(6).fill("")).slice(0, 6);
     setOtpArr(filled);
+
     const lastIndex = Math.min(text.length, 6) - 1;
     if (lastIndex >= 0) focusIndex(lastIndex);
   }
@@ -115,20 +132,18 @@ export default function VerifyOtp() {
       const data = await authService.forgotPassword({ email });
       setMsg(data.message || "Đã gửi lại mã.");
 
-      // ✅ reset timer + clear otp + focus ô đầu
       setOtpArr(Array(6).fill(""));
       setSecondsLeft(OTP_TTL);
       setExpired(false);
       focusIndex(0);
-    } catch (e: any) {
-      setErr(e?.response?.data?.message ?? "Không gửi lại được. Thử lại.");
+    } catch (error: unknown) {
+      setErr(getErrorMessage(error, "Không gửi lại được. Thử lại."));
     } finally {
       setLoading(false);
     }
   }
 
-  // ✅ Theo yêu cầu: xác nhận OTP xong -> chuyển trang reset password
-  async function submitOtp(e: React.FormEvent) {
+  async function submitOtp(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (otp.length !== 6) return;
 
@@ -159,12 +174,19 @@ export default function VerifyOtp() {
             <div className="otp-badge">🛡️</div>
             <h1 className="otp-title">Xác minh mã OTP</h1>
 
-            <p className="otp-subtitle">Vui lòng nhập mã 6 chữ số đã được gửi đến email của bạn</p>
+            <p className="otp-subtitle">
+              Vui lòng nhập mã 6 chữ số đã được gửi đến email của bạn
+            </p>
 
-            {/* ✅ Timer */}
             <div className="otp-timerRow">
               <span className="otp-timerLabel">Mã hết hạn sau:</span>
-              <span className={`otp-timerValue ${expired ? "otp-timerValue--expired" : ""}`}>{timeText}</span>
+              <span
+                className={`otp-timerValue ${
+                  expired ? "otp-timerValue--expired" : ""
+                }`}
+              >
+                {timeText}
+              </span>
             </div>
 
             {expired && (
@@ -201,7 +223,12 @@ export default function VerifyOtp() {
 
               <div className="otp-resend">
                 <div className="otp-muted">Không nhận được mã?</div>
-                <button className="otp-linkBtn" type="button" onClick={resend} disabled={loading}>
+                <button
+                  className="otp-linkBtn"
+                  type="button"
+                  onClick={resend}
+                  disabled={loading}
+                >
                   Gửi lại mã
                 </button>
               </div>
@@ -219,14 +246,18 @@ export default function VerifyOtp() {
               <div className="otp-secLine">
                 <span className="otp-dot" /> MÃ HÓA ĐẦU CUỐI 256-BIT AES
               </div>
-              <div className="otp-secSub">BẢO MẬT BỞI HẠ TẦNG AN NINH ĐA LỚP SECUREFIN</div>
+              <div className="otp-secSub">
+                BẢO MẬT BỞI HẠ TẦNG AN NINH ĐA LỚP SECUREFIN
+              </div>
             </div>
           </div>
         </section>
       </main>
 
       <footer className="otp-bottom">
-        <div className="otp-bottomLeft">© 2026 SecureFin Intelligence. Bảo mật tuyệt đối.</div>
+        <div className="otp-bottomLeft">
+          © 2026 SecureFin Intelligence. Bảo mật tuyệt đối.
+        </div>
         <div className="otp-bottomRight">
           <span className="otp-bottomLink">Quyền riêng tư</span>
           <span className="otp-sep">•</span>

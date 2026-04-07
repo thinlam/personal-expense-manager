@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import type { AxiosError } from "axios";
 import "./settings.css";
 import {
   changeMyPassword,
@@ -213,8 +214,8 @@ export default function Settings() {
       }
 
       setSuccess(res.message || "Lưu thay đổi thành công");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Không thể cập nhật hồ sơ");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Không thể cập nhật hồ sơ"));
     } finally {
       setSaving(false);
     }

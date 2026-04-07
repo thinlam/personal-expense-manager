@@ -1,25 +1,55 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { isAxiosError } from "axios";
 import { authService } from "../../services/auth.service";
 import { storage } from "../../utils/storage";
 import "./verifyEmailOtp.css";
 
-type LocationState = { email?: string };
+type LocationState = {
+  email?: string;
+};
+
+type VerifyPayload = {
+  token?: string;
+  user?: unknown;
+};
+
+type VerifyResponse = {
+  ok?: boolean;
+  message?: string;
+  token?: string;
+  user?: unknown;
+  data?: VerifyPayload;
+};
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (isAxiosError<{ message?: string }>(error)) {
+    return error.response?.data?.message ?? error.message ?? fallback;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return fallback;
+}
 
 export default function VerifyEmailOtp() {
   const nav = useNavigate();
   const location = useLocation();
   const state = (location.state as LocationState) || {};
-  const email = state.email?.trim()?.toLowerCase() || "";
+  const email = state.email?.trim().toLowerCase() || "";
 
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
-  const canSubmit = useMemo(() => email && otp.trim().length === 6, [email, otp]);
+  const canSubmit = useMemo(() => {
+    return !!email && otp.trim().length === 6;
+  }, [email, otp]);
 
-  const onVerify = async (e: React.FormEvent) => {
+  const onVerify = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!canSubmit) return;
 
@@ -27,21 +57,31 @@ export default function VerifyEmailOtp() {
     setMsg(null);
     setLoading(true);
 
-   try {
-        const data = await authService.verifyEmailOtp({ email, otp });
+    try {
+      const data = (await authService.verifyEmailOtp({
+        email,
+        otp,
+      })) as VerifyResponse;
 
-        // nếu backend lỡ trả wrapper {ok, message, data}
-        const payload = (data?.token && data?.user) ? data : data?.data;
+      const payload: VerifyPayload =
+        data.token && data.user ? data : data.data ?? {};
 
-        if (!payload?.token) throw new Error(data?.message ?? "Xác minh thất bại");
+      if (!payload.token) {
+        throw new Error(data.message ?? "Xác minh thất bại");
+      }
 
-        storage.setToken(payload.token);
+      storage.setToken(payload.token);
+
+      if (payload.user) {
         storage.setUser(payload.user);
+      }
 
-        nav("/dashboard", { replace: true });
-        } catch (e: any) {
-        setErr(e?.response?.data?.message ?? e?.message ?? "Xác minh thất bại");
-        }
+      nav("/dashboard", { replace: true });
+    } catch (error: unknown) {
+      setErr(getErrorMessage(error, "Xác minh thất bại"));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onResend = async () => {
@@ -50,11 +90,16 @@ export default function VerifyEmailOtp() {
     setLoading(true);
 
     try {
-      // ✅ resend: gọi lại registerInit (backend của bạn hỗ trợ resend khi user chưa verify)
-      await authService.registerInit({ name: "tmp", email, password: "tmp_tmp_tmp" } as any);
+      const registerPayload: Parameters<typeof authService.registerInit>[0] = {
+        name: "tmp",
+        email,
+        password: "tmp_tmp_tmp",
+      };
+
+      await authService.registerInit(registerPayload);
       setMsg("Đã gửi lại OTP. Vui lòng kiểm tra email.");
-    } catch (e: any) {
-      setErr(e?.response?.data?.message ?? "Gửi lại OTP thất bại");
+    } catch (error: unknown) {
+      setErr(getErrorMessage(error, "Gửi lại OTP thất bại"));
     } finally {
       setLoading(false);
     }
@@ -86,7 +131,9 @@ export default function VerifyEmailOtp() {
           <input
             className="veInput"
             value={otp}
-            onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            onChange={(e) =>
+              setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+            }
             placeholder="Nhập OTP (6 số)"
             inputMode="numeric"
           />
@@ -98,7 +145,12 @@ export default function VerifyEmailOtp() {
             {loading ? "Đang xử lý..." : "Xác minh"}
           </button>
 
-          <button type="button" className="veLink" onClick={onResend} disabled={loading}>
+          <button
+            type="button"
+            className="veLink"
+            onClick={onResend}
+            disabled={loading}
+          >
             Gửi lại OTP
           </button>
 
