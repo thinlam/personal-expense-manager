@@ -6,7 +6,7 @@ const emailOtpSchema = new Schema(
     otpHash: { type: String, required: true },
     purpose: { type: String, enum: ["VERIFY_EMAIL"], default: "VERIFY_EMAIL", index: true },
 
-    expiresAt: { type: Date, required: true, index: true },
+    expiresAt: { type: Date, required: true },
     attempts: { type: Number, default: 0 },
     lastSentAt: { type: Date, default: () => new Date() },
   },

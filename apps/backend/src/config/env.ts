@@ -8,7 +8,7 @@ const must = (k: string) => {
 
 export const env = {
   PORT: Number(process.env.PORT ?? 4000),
-  MONGODB_URI: must("MONGODB_URI"),
+  MONGODB_URI: process.env.MONGODB_URI ?? must("MONGO_URI"),
   JWT_SECRET: must("JWT_SECRET"),
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN ?? "7d",
   SMTP_HOST: process.env.SMTP_HOST ?? "",
