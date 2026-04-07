@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
     passwordHash: { type: String, required: true },
+    authVersion: { type: Number, default: 0 },
 
     // ========================= Profile / Settings =========================
     avatar: { type: String, default: "" },
@@ -33,11 +34,55 @@ const userSchema = new mongoose.Schema(
       default: "DD/MM/YYYY",
     },
 
+    timeFormat: {
+      type: String,
+      enum: ["24h", "12h"],
+      default: "24h",
+    },
+
     weekStart: {
       type: String,
       enum: ["mon", "sun"],
       default: "mon",
     },
+
+    notifications: {
+      transaction: { type: Boolean, default: true },
+      budgetAlert: { type: Boolean, default: true },
+      weeklyReport: { type: Boolean, default: false },
+      emailReminder: { type: Boolean, default: true },
+      pushNotification: { type: Boolean, default: true },
+      channel: {
+        type: String,
+        enum: ["all", "important", "mute"],
+        default: "important",
+      },
+    },
+
+    security: {
+      twoFactorEnabled: { type: Boolean, default: false },
+      loginAlert: { type: Boolean, default: true },
+      newDeviceAlert: { type: Boolean, default: true },
+      transactionPin: { type: Boolean, default: false },
+      hasPin: { type: Boolean, default: false },
+      pinHash: { type: String, default: "", select: false },
+      profileVisibility: {
+        type: String,
+        enum: ["private", "friends", "public"],
+        default: "private",
+      },
+    },
+
+    securityDevices: [
+      {
+        deviceId: { type: String, required: true },
+        deviceName: { type: String, default: "Unknown Device" },
+        platform: { type: String, default: "Unknown Platform" },
+        browser: { type: String, default: "Unknown Browser" },
+        lastActiveAt: { type: Date, default: Date.now },
+        isCurrent: { type: Boolean, default: false },
+      },
+    ],
 
     // ========================= Forgot Password OTP =========================
     resetPasswordOtpHash: { type: String, default: null },

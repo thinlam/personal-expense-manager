@@ -6,12 +6,28 @@ import { EmailOtpModel } from "./emailOtp.model";
 import { generateOtp6, sha256, timingSafeEqualHex } from "../../utils/crypto";
 import { sendForgotPasswordOtpEmail, sendVerifyEmailOtpEmail } from "../shared/mailer";
 
-const signToken = (payload: { userId: string; email: string }) =>
+const signToken = (payload: { userId: string; email: string; authVersion: number }) =>
   jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN });
 
 const OTP_TTL_MS = 10 * 60 * 1000; // 10 phút
 const OTP_MAX_ATTEMPTS = 5;
 const OTP_RESEND_COOLDOWN_MS = 60 * 1000; // 60 giây
+
+type LoginDeviceInput = {
+  deviceId: string;
+  deviceName: string;
+  platform: string;
+  browser: string;
+};
+
+function sanitizeDevice(device?: Partial<LoginDeviceInput>): LoginDeviceInput {
+  return {
+    deviceId: String(device?.deviceId || "unknown-device").slice(0, 120),
+    deviceName: String(device?.deviceName || "Unknown Device").slice(0, 120),
+    platform: String(device?.platform || "Unknown Platform").slice(0, 120),
+    browser: String(device?.browser || "Unknown Browser").slice(0, 120),
+  };
+}
 
 export const AuthService = {
   // =========================
@@ -100,7 +116,11 @@ export const AuthService = {
     // clear otp record
     await EmailOtpModel.deleteMany({ email, purpose: "VERIFY_EMAIL" });
 
-    const token = signToken({ userId: user._id.toString(), email: user.email });
+    const token = signToken({
+      userId: user._id.toString(),
+      email: user.email,
+      authVersion: Number((user as any).authVersion || 0),
+    });
 
     return {
       ok: true as const,
@@ -152,7 +172,7 @@ export const AuthService = {
     return this.registerInit(input);
   },
 
-  async login(input: { email: string; password: string }) {
+  async login(input: { email: string; password: string; device?: LoginDeviceInput }) {
     const email = input.email.toLowerCase().trim();
     const user = await UserModel.findOne({ email });
     if (!user) return { ok: false as const, status: 401, message: "Sai email hoặc mật khẩu" };
@@ -165,7 +185,35 @@ export const AuthService = {
     const ok = await bcrypt.compare(input.password, user.passwordHash);
     if (!ok) return { ok: false as const, status: 401, message: "Sai email hoặc mật khẩu" };
 
-    const token = signToken({ userId: user._id.toString(), email: user.email });
+    const device = sanitizeDevice(input.device);
+    const devices = Array.isArray((user as any).securityDevices)
+      ? [...(user as any).securityDevices]
+      : [];
+
+    const nextDevices = devices
+      .map((d) => ({
+        ...d,
+        isCurrent: false,
+      }))
+      .filter((d) => d.deviceId !== device.deviceId);
+
+    nextDevices.unshift({
+      deviceId: device.deviceId,
+      deviceName: device.deviceName,
+      platform: device.platform,
+      browser: device.browser,
+      lastActiveAt: new Date(),
+      isCurrent: true,
+    });
+
+    (user as any).securityDevices = nextDevices.slice(0, 10);
+    await user.save();
+
+    const token = signToken({
+      userId: user._id.toString(),
+      email: user.email,
+      authVersion: Number((user as any).authVersion || 0),
+    });
     return {
       ok: true as const,
       data: { token, user: { id: user._id.toString(), name: user.name, email: user.email, emailVerified: true } },

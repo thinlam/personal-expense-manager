@@ -18,6 +18,14 @@ export const registerSchema = z.object({
 export const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
+  device: z
+    .object({
+      deviceId: z.string().min(1).max(120),
+      deviceName: z.string().min(1).max(120),
+      platform: z.string().min(1).max(120),
+      browser: z.string().min(1).max(120),
+    })
+    .optional(),
 });
 export const forgotPasswordSchema = z.object({
   email: z.string().email("Email không hợp lệ").min(5).max(255),

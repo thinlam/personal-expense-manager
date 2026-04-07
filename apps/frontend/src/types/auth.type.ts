@@ -20,4 +20,10 @@ export type RegisterPayload = {
 export type LoginPayload = {
   email: string;
   password: string;
+  device?: {
+    deviceId: string;
+    deviceName: string;
+    platform: string;
+    browser: string;
+  };
 };
