@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { isAxiosError } from "axios";
 import { authService } from "../../services/auth.service";
 
 import "./forgot.css";
@@ -37,8 +38,14 @@ export default function Forgot() {
       // ✅ thông báo + chuyển sang màn OTP
       setServerMsg(data.message || "Đã gửi OTP.");
       navigate("/verify-otp", { state: { email: value } });
-    } catch (err: any) {
-      setError(err?.response?.data?.message ?? "Có lỗi xảy ra. Vui lòng thử lại.");
+    } catch (err: unknown) {
+      if (isAxiosError<{ message?: string }>(err)) {
+        setError(err.response?.data?.message ?? err.message ?? "Có lỗi xảy ra. Vui lòng thử lại.");
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Có lỗi xảy ra. Vui lòng thử lại.");
+      }
     } finally {
       setLoading(false);
     }

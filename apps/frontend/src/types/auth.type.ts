@@ -6,7 +6,7 @@ export type UserDTO = {
 
 export type AuthSuccessDTO = {
   message: string;
-  data: any;
+  data: unknown;
   token: string;
   user: UserDTO;
 };

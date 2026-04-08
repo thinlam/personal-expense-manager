@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { isAxiosError } from "axios";
 import { authService } from "../../services/auth.service";
+import { storage } from "../../utils/storage";
 import "./register.css";
 
 function getErrorMessage(error: unknown, fallback: string) {
@@ -54,16 +55,22 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await authService.registerInit({
+      const res = await authService.registerInit({
         name: name.trim(),
         email: email.trim().toLowerCase(),
         password,
       });
 
-      nav("/verify-email-otp", {
-        replace: true,
-        state: { email: email.trim().toLowerCase() },
-      });
+      if (res?.token && res?.user) {
+        storage.setToken(res.token);
+        storage.setUser(res.user);
+        nav("/dashboard", { replace: true });
+      } else {
+        nav("/verify-email-otp", {
+          replace: true,
+          state: { email: email.trim().toLowerCase() },
+        });
+      }
     } catch (error: unknown) {
       setError(getErrorMessage(error, "Đăng ký thất bại"));
     } finally {

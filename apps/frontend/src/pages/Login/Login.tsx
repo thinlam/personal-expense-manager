@@ -195,6 +195,8 @@ export default function Login() {
 }
 
 function buildLoginDevicePayload() {
+  type NavigatorWithUAData = Navigator & { userAgentData?: { platform?: string } };
+
   const ua = navigator.userAgent || "";
   const browser = ua.includes("Edg")
     ? "Edge"
@@ -207,7 +209,7 @@ function buildLoginDevicePayload() {
           : "Browser";
 
   const platform =
-    (navigator as any).userAgentData?.platform ||
+    (navigator as NavigatorWithUAData).userAgentData?.platform ||
     navigator.platform ||
     "Unknown Platform";
   const deviceName = `${browser} on ${platform}`;

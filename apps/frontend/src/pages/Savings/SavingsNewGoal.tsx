@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { isAxiosError } from "axios";
 import "./savings-new-goal.css";
 import { createBudget } from "../../services/budget.service";
 
@@ -40,8 +41,14 @@ export default function SavingsNewGoal() {
       });
 
       navigate("/savings", { replace: true });
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Không thể tạo mục tiêu tiết kiệm.");
+    } catch (err: unknown) {
+      if (isAxiosError<{ message?: string }>(err)) {
+        setError(err.response?.data?.message ?? err.message ?? "Không thể tạo mục tiêu tiết kiệm.");
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Không thể tạo mục tiêu tiết kiệm.");
+      }
     } finally {
       setSaving(false);
     }

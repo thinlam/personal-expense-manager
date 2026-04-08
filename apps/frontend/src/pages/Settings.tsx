@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { isAxiosError } from "axios";
 import "./settings.css";
 import {
   changeMyPassword,
@@ -32,6 +33,18 @@ type MenuKey =
   | "bank";
 
 type TimeFormat = "24h" | "12h";
+
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (isAxiosError<{ message?: string }>(error)) {
+    return error.response?.data?.message ?? error.message ?? fallback;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return fallback;
+}
 
 type NotificationState = {
   transaction: boolean;
@@ -134,10 +147,8 @@ export default function Settings() {
           profileVisibility: data.security?.profileVisibility ?? "private",
         });
         setSecurityDevices(data.securityDevices || []);
-      } catch (err: any) {
-        setError(
-          err?.response?.data?.message || "Không lấy được thông tin người dùng"
-        );
+      } catch (err: unknown) {
+        setError(getErrorMessage(err, "Không lấy được thông tin người dùng"));
       } finally {
         setLoading(false);
       }
@@ -259,8 +270,8 @@ export default function Settings() {
       }
 
       setSuccess(res.message || "Cập nhật thông báo thành công");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Không thể cập nhật thông báo");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Không thể cập nhật thông báo"));
     } finally {
       setSaving(false);
     }
@@ -306,8 +317,8 @@ export default function Settings() {
       }
 
       setSuccess(res.message || "Cập nhật bảo mật thành công");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Không thể cập nhật bảo mật");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Không thể cập nhật bảo mật"));
     } finally {
       setSaving(false);
     }
@@ -334,8 +345,8 @@ export default function Settings() {
       setNewPassword("");
       setConfirmPassword("");
       setSuccess(res.message || "Đổi mật khẩu thành công");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Không thể đổi mật khẩu");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Không thể đổi mật khẩu"));
     } finally {
       setSaving(false);
     }
@@ -363,8 +374,8 @@ export default function Settings() {
       });
       setSecurityDevices(res.user.securityDevices || securityDevices);
       setSuccess(res.message || "Cập nhật mã PIN thành công");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Không thể cập nhật mã PIN");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Không thể cập nhật mã PIN"));
     } finally {
       setSaving(false);
     }
@@ -383,10 +394,8 @@ export default function Settings() {
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
       navigate("/login", { replace: true });
-    } catch (err: any) {
-      setError(
-        err?.response?.data?.message || "Không thể đăng xuất tất cả thiết bị"
-      );
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Không thể đăng xuất tất cả thiết bị"));
     } finally {
       setSaving(false);
     }

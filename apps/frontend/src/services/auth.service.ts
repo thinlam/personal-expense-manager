@@ -13,7 +13,12 @@ export type ResetPasswordPayload = {
 
 // ✅ NEW: Register init (gửi OTP verify email)
 export type RegisterInitPayload = RegisterPayload; // { name, email, password }
-export type RegisterInitDTO = { email?: string; message?: string } | any;
+export type RegisterInitDTO = {
+  email?: string;
+  message?: string;
+  token?: string;
+  user?: unknown;
+};
 
 // ✅ NEW: Verify email OTP
 export type VerifyEmailOtpPayload = { email: string; otp: string };

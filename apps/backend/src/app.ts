@@ -10,13 +10,23 @@ import reportRouter from "./modules/reports/report.routes";
 import walletRouter from "./modules/wallets/wallet.routes";
 import userRouter from "./modules/users/user.routes";
 
-const allowedOrigins = (
-  process.env.CORS_ORIGINS ??
-  "http://localhost:5173,https://personal-expense-manager-two.vercel.app"
-)
+const allowedOrigins = (process.env.CORS_ORIGINS ?? "http://localhost:5173")
   .split(",")
   .map((item) => item.trim())
   .filter(Boolean);
+
+const allowVercelApp = (() => {
+  const raw = process.env.CORS_ALLOW_VERCEL_APP;
+  if (raw === "true") return true;
+  if (raw === "false") return false;
+  return !process.env.CORS_ORIGINS;
+})();
+
+function isAllowedOrigin(origin: string) {
+  if (allowedOrigins.includes(origin)) return true;
+  if (allowVercelApp && /^https:\/\/.*\.vercel\.app$/.test(origin)) return true;
+  return false;
+}
 
 export function createApp() {
   const app = express();
@@ -26,7 +36,7 @@ export function createApp() {
       origin(origin, callback) {
         if (!origin) return callback(null, true);
 
-        if (allowedOrigins.includes(origin)) {
+        if (isAllowedOrigin(origin)) {
           return callback(null, true);
         }
 

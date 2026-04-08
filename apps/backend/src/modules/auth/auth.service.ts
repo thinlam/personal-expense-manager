@@ -7,7 +7,13 @@ import { generateOtp6, sha256, timingSafeEqualHex } from "../../utils/crypto";
 import { sendForgotPasswordOtpEmail, sendVerifyEmailOtpEmail } from "../shared/mailer";
 
 const signToken = (payload: { userId: string; email: string; authVersion: number }) =>
-  jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN });
+  jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN as SignOptions["expiresIn"] });
+
+const requireEmailVerification = (() => {
+  if (process.env.REQUIRE_EMAIL_VERIFICATION === "true") return true;
+  if (process.env.REQUIRE_EMAIL_VERIFICATION === "false") return false;
+  return Boolean(env.SMTP_HOST && env.SMTP_PORT && env.SMTP_USER && env.SMTP_PASS && env.SMTP_FROM);
+})();
 
 const OTP_TTL_MS = 10 * 60 * 1000; // 10 phút
 const OTP_MAX_ATTEMPTS = 5;
@@ -46,7 +52,29 @@ export const AuthService = {
       // Nếu chưa verify => cho resend OTP (không tạo user mới)
     } else {
       const passwordHash = await bcrypt.hash(input.password, 10);
-      await UserModel.create({ name, email, passwordHash, emailVerified: false });
+      await UserModel.create({ name, email, passwordHash, emailVerified: !requireEmailVerification });
+    }
+
+    if (!requireEmailVerification) {
+      const user = await UserModel.findOne({ email });
+      if (!user) return { ok: false as const, status: 500, message: "Không thể tạo tài khoản" };
+
+      if (!user.emailVerified) {
+        user.emailVerified = true;
+        await user.save();
+      }
+
+      const token = signToken({
+        userId: user._id.toString(),
+        email: user.email,
+        authVersion: Number((user as any).authVersion || 0),
+      });
+
+      return {
+        ok: true as const,
+        message: "Đăng ký thành công.",
+        data: { token, user: { id: user._id.toString(), name: user.name, email: user.email, emailVerified: true } },
+      };
     }
 
     // cooldown resend
@@ -178,7 +206,7 @@ export const AuthService = {
     if (!user) return { ok: false as const, status: 401, message: "Sai email hoặc mật khẩu" };
 
     // ✅ chặn login nếu chưa verify email
-    if (!user.emailVerified) {
+    if (requireEmailVerification && !user.emailVerified) {
       return { ok: false as const, status: 403, message: "Email chưa được xác minh. Vui lòng kiểm tra OTP trong email." };
     }
 
