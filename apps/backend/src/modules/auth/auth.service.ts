@@ -17,7 +17,7 @@ type LoginDeviceInput = {
   deviceId: string;
   deviceName: string;
   platform: string;
-  browser: string;
+  browser: string;    
 };
 
 function sanitizeDevice(device?: Partial<LoginDeviceInput>): LoginDeviceInput {

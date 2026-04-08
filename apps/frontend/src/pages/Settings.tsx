@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { AxiosError } from "axios";
 import "./settings.css";
 import {
   changeMyPassword,
